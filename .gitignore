@@ -1,0 +1,12 @@
+# Documentos del cliente y PDF: no se suben
+docs/
+*.pdf
+# Secretos y entorno
+.env
+.env.*
+.dev.vars
+# Dependencias y salidas
+node_modules/
+dist/
+.wrangler/
+supabase/.temp/
