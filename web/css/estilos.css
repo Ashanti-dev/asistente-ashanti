@@ -178,5 +178,5 @@ dialog .cerrar{position:sticky;top:0;float:right;margin:8px}
 .grafica .cab{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
 .grafica .cab span{font-weight:700;font-size:14px}
 .grafica .cab button{font:inherit;font-size:13px;background:none;border:1px solid var(--linea);border-radius:4px;padding:4px 10px;cursor:pointer;color:var(--tinta-2)}
-.grafica canvas{width:100% !important;height:240px}
+.grafica .lienzo{width:100%}
 .previsual{display:inline-block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--gris);border:1px solid var(--linea);border-radius:3px;padding:2px 8px;margin-left:8px;vertical-align:middle}

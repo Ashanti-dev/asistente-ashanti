@@ -70,13 +70,13 @@
   function grafica(pares, titulo, color) {
     const id = 'g' + Math.random().toString(36).slice(2);
     graficas.push({ id, pares, titulo, color });
-    return `<div class="grafica"><div class="cab"><span>${titulo}</span><span><button data-png="${id}">Descargar imagen</button> <button data-xls="${id}">Descargar Excel</button></span></div><canvas id="${id}"></canvas></div>`;
+    return `<div class="grafica"><div class="cab"><span>${titulo}</span><span><button data-png="${id}">Descargar imagen</button> <button data-xls="${id}">Descargar Excel</button></span></div><div class="lienzo" style="position:relative;height:${Math.max(240, pares.length > 3 ? pares.length * 38 + 40 : 240)}px"><canvas id="${id}"></canvas></div></div>`;
   }
   function pintarGraficas() {
     Chart.defaults.font.family = "'Barlow', system-ui, sans-serif"; Chart.defaults.font.size = 13; Chart.defaults.color = '#333333';
     for (const g of graficas) {
       const horizontal = g.pares.length > 3;
-      const cv = document.getElementById(g.id); if (horizontal) cv.style.height = Math.max(240, g.pares.length * 38 + 40) + 'px';
+      const cv = document.getElementById(g.id);
       const corto = v => { const t = String(v); return t.length > 34 ? t.slice(0, 32) + '…' : t; };
       new Chart(cv, {
         type: 'bar',
