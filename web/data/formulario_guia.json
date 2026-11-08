@@ -1,0 +1,36 @@
+{
+  "perfiles": [
+    {"id": "autoridades", "nombre": "Autoridades y funcionarios municipales"},
+    {"id": "sociedad_civil", "nombre": "Sociedad civil", "nota": "Incluye al público en general y a activistas."}
+  ],
+  "limite_texto_propio": 1500,
+  "preguntas": [
+    {"id": "tema", "etiqueta": "Tema", "tipo": "ejes_multiple",
+     "autoridades": "¿En qué tema o temas necesita apoyo?",
+     "sociedad_civil": "¿Sobre qué tema o temas quiere actuar?"},
+    {"id": "poblacion", "etiqueta": "Población", "tipo": "texto_corto",
+     "autoridades": "¿Con qué población trabaja? (por ejemplo población afroperuana, comunidades andinas, jóvenes, mujeres)",
+     "sociedad_civil": "¿Con qué población trabaja su organización?"},
+    {"id": "logro", "etiqueta": "Lo que quiere lograr", "tipo": "texto_corto",
+     "autoridades": "¿Qué quiere lograr en su gestión con este tema?",
+     "sociedad_civil": "¿Qué cambio quiere proponer a sus autoridades?"},
+    {"id": "prioridades", "etiqueta": "Prioridades", "tipo": "texto_corto",
+     "autoridades": "¿Qué prioriza en su gestión sobre este tema?",
+     "sociedad_civil": "¿A qué autoridad o espacio quiere llevar la propuesta?"},
+    {"id": "condiciones", "etiqueta": "Condiciones", "tipo": "texto_corto",
+     "autoridades": "¿Con qué recursos o limitaciones cuenta (presupuesto, equipo, aliados)?",
+     "sociedad_civil": "¿Con qué aliados o recursos cuenta?"},
+    {"id": "texto_propio", "etiqueta": "Texto propio", "tipo": "texto_largo", "opcional": true, "maximo": 1500,
+     "autoridades": "Si quiere, describa su caso con más detalle (hasta 1 500 caracteres).",
+     "sociedad_civil": "Si quiere, describa su caso con más detalle (hasta 1 500 caracteres)."}
+  ],
+  "registro": [
+    {"id": "nombres", "etiqueta": "Nombres y apellidos", "obligatorio": true},
+    {"id": "correo", "etiqueta": "Correo electrónico", "obligatorio": true},
+    {"id": "perfil", "etiqueta": "Perfil", "obligatorio": true, "nota": "Se toma de la selección al entrar."},
+    {"id": "institucion", "etiqueta": "Municipalidad, organización o independiente", "obligatorio": true, "nota": "Opción \"independiente\" para personas no vinculadas a una institución."},
+    {"id": "cargo", "etiqueta": "Cargo o rol", "obligatorio": false},
+    {"id": "departamento", "etiqueta": "Departamento", "obligatorio": false, "nota": "Solo departamento, sin provincia ni distrito."},
+    {"id": "consentimiento", "etiqueta": "Consentimiento", "obligatorio": true, "texto": "Sus datos y sus consultas se guardan para el seguimiento del proyecto Municipios que Incluyen y la mejora de la herramienta, conforme a la Ley N.° 29733, Ley de Protección de Datos Personales. Ashanti Perú es titular de esos datos."}
+  ]
+}

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="es" class="panel">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel de administración · Asistente Inteligente · Ashanti Perú</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="css/estilos.css"><link rel="icon" href="marca/logo_ashanti_peru.png">
+</head>
+<body class="panel">
+<header class="cabecera"><div class="cabecera-in">
+  <a href="index.html"><img src="marca/logo_ashanti_peru.png" alt="Ashanti Perú"></a>
+  <div class="proyecto">Panel de administración<br><span id="quien"></span></div>
+</div></header>
+<main>
+  <section id="v-login" class="login oculto">
+    <span class="antetitulo">Solo equipo de Ashanti Perú</span>
+    <h1>Entrar al panel</h1>
+    <form id="f-login" style="margin-top:24px">
+      <div class="campo"><label for="l-correo">Correo</label><input type="email" id="l-correo" autocomplete="username" required></div>
+      <div class="campo"><label for="l-clave">Contraseña</label><input type="password" id="l-clave" autocomplete="current-password" required style="width:100%;font:inherit;border:1.5px solid var(--tinta-2);border-radius:4px;padding:12px 14px;min-height:52px"></div>
+      <div id="l-error" class="aviso error oculto"></div>
+      <button class="boton" type="submit">Entrar</button>
+    </form>
+  </section>
+
+  <section id="v-panel" class="oculto">
+    <div class="barra-tabla"><h1>Asistente Inteligente para la Innovación Pública Local</h1><button class="boton secundario" id="b-salir" style="min-height:40px;font-size:14px;width:auto">Salir</button></div>
+    <div id="aviso-prueba" class="aviso oculto">Modo de prueba: los datos que ve son de muestra. Cuando la herramienta esté conectada, aquí aparecen las consultas reales.</div>
+    <nav class="pestanas">
+      <button data-tab="indicadores" class="activa">Indicadores</button>
+      <button data-tab="consultas">Consultas</button>
+      <button data-tab="usuarios">Usuarios</button>
+      <button data-tab="contenido">Contenido</button>
+    </nav>
+    <div id="t-indicadores" data-tab></div>
+    <div id="t-consultas" data-tab class="oculto"></div>
+    <div id="t-usuarios" data-tab class="oculto"></div>
+    <div id="t-contenido" data-tab class="oculto"></div>
+  </section>
+</main>
+<dialog id="dlg"><button class="boton texto cerrar" onclick="dlg.close()">Cerrar</button><article class="hoja" id="dlg-hoja"></article></dialog>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/panel.js"></script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Asistente Inteligente para la Innovación Pública Local · Ashanti Perú</title>
+<meta name="description" content="Recomendaciones aplicables a partir de buenas prácticas municipales de inclusión, para autoridades, funcionarios y sociedad civil. Proyecto Municipios que Incluyen, Ashanti Perú.">
+<link rel="stylesheet" href="css/estilos.css">
+<link rel="icon" href="marca/logo_ashanti_peru.png">
+</head>
+<body>
+<header class="cabecera">
+  <div class="cabecera-in">
+    <a href="#perfil" aria-label="Inicio"><img src="marca/logo_ashanti_peru.png" alt="Ashanti Perú"></a>
+    <div class="proyecto">Caja de Herramientas para Municipios<br>Municipios que Incluyen</div>
+  </div>
+</header>
+
+<main id="app">
+
+  <!-- Pantalla 1: perfil -->
+  <section id="v-perfil" data-vista>
+    <span class="antetitulo">Asistente Inteligente para la Innovación Pública Local</span>
+    <h1>¿Desde dónde consulta?</h1>
+    <p class="guia">Elija su perfil. En cinco preguntas ordenamos su caso y le entregamos una hoja de recomendaciones basada en ocho buenas prácticas municipales de inclusión, con sus fuentes.</p>
+    <div class="perfiles">
+      <button class="perfil" data-perfil="autoridades"><strong>Autoridades y funcionarios municipales</strong><span>Alcaldes, regidoras, gerentes, subgerentes y equipos técnicos.</span></button>
+      <button class="perfil" data-perfil="sociedad_civil"><strong>Sociedad civil</strong><span>Organizaciones, colectivos, activistas y público en general.</span></button>
+    </div>
+  </section>
+
+  <!-- Pantalla 2: registro -->
+  <section id="v-registro" data-vista class="oculto">
+    <a href="#perfil" class="volver">← Cambiar de perfil</a>
+    <div class="pasos"><span class="hecho"></span><span></span><span></span></div>
+    <span class="antetitulo" id="r-perfil"></span>
+    <h1>Antes de empezar, sus datos</h1>
+    <p class="guia">Sirven para el seguimiento del proyecto. No se crea ninguna cuenta.</p>
+    <form id="f-registro" novalidate>
+      <div class="campo"><label for="nombres">Nombres y apellidos</label><input type="text" id="nombres" name="nombres" autocomplete="name" required><div class="error">Escriba su nombre.</div></div>
+      <div class="campo"><label for="correo">Correo electrónico</label><input type="email" id="correo" name="correo" autocomplete="email" required><div class="error">Escriba un correo válido.</div></div>
+      <div class="campo"><label for="institucion" id="l-institucion">Municipalidad u organización</label><p class="ayuda" id="a-institucion"></p><input type="text" id="institucion" name="institucion" required><div class="error">Indique su institución o escriba "independiente".</div></div>
+      <div class="campo"><label for="cargo">Cargo o rol <span class="opcional">(opcional)</span></label><input type="text" id="cargo" name="cargo"></div>
+      <div class="campo"><label for="departamento">Departamento <span class="opcional">(opcional)</span></label><select id="departamento" name="departamento"><option value="">Seleccione</option></select></div>
+      <div class="campo"><label class="consentimiento"><input type="checkbox" id="consentimiento" name="consentimiento" required><span>Autorizo que mis datos y mis consultas se guarden para el seguimiento del proyecto Municipios que Incluyen y la mejora de esta herramienta, conforme a la Ley N.° 29733, Ley de Protección de Datos Personales. Ashanti Perú es titular de esos datos.</span></label><div class="error">Necesitamos su autorización para continuar.</div></div>
+      <div class="acciones"><button type="submit" class="boton">Continuar al formulario guía</button></div>
+    </form>
+  </section>
+
+  <!-- Pantalla 3: formulario guía -->
+  <section id="v-formulario" data-vista class="oculto">
+    <a href="#registro" class="volver">← Volver</a>
+    <div class="pasos"><span class="hecho"></span><span class="hecho"></span><span></span></div>
+    <span class="antetitulo" id="g-perfil"></span>
+    <h1>Formulario guía</h1>
+    <p class="guia">Cinco preguntas para ordenar su caso. Puede marcar uno o varios temas.</p>
+    <form id="f-guia" novalidate>
+      <div class="campo" id="c-tema"><span class="etiqueta" id="q-tema"></span><div class="casillas" id="temas"></div><div class="error">Marque al menos un tema.</div></div>
+      <div class="campo"><label for="poblacion" id="q-poblacion"></label><input type="text" id="poblacion" required><div class="error">Cuéntenos con qué población trabaja.</div></div>
+      <div class="campo"><label for="logro" id="q-logro"></label><input type="text" id="logro" required><div class="error">Escriba qué quiere lograr.</div></div>
+      <div class="campo"><label for="prioridades" id="q-prioridades"></label><input type="text" id="prioridades" required><div class="error">Complete esta respuesta.</div></div>
+      <div class="campo"><label for="condiciones" id="q-condiciones"></label><input type="text" id="condiciones" required><div class="error">Complete esta respuesta.</div></div>
+      <div class="campo"><label for="texto_propio">Texto propio <span class="opcional">(opcional)</span></label><p class="ayuda" id="q-texto_propio"></p><textarea id="texto_propio" maxlength="1500"></textarea><div class="contador" id="contador">0 de 1 500 caracteres</div></div>
+      <div class="acciones"><button type="submit" class="boton">Generar mi hoja de recomendaciones</button></div>
+    </form>
+  </section>
+
+  <!-- Pantalla 4: espera -->
+  <section id="v-espera" data-vista class="oculto">
+    <div class="pasos"><span class="hecho"></span><span class="hecho"></span><span class="hecho"></span></div>
+    <h1>Preparando su hoja de recomendaciones</h1>
+    <p class="guia">Tarda entre 15 y 40 segundos. No cierre esta página.</p>
+    <div class="hoja espera">
+      <p class="estado" id="estado-espera">Leyendo su consulta…</p>
+      <div class="barra"><i id="barra"></i></div>
+      <h2>1. Su consulta</h2><div class="linea-falsa"></div><div class="linea-falsa corta"></div>
+      <h2>2. Buenas prácticas que aplican</h2><div class="linea-falsa"></div><div class="linea-falsa"></div><div class="linea-falsa corta"></div>
+      <h2>3. Recomendaciones aplicables</h2><div class="linea-falsa"></div><div class="linea-falsa"></div>
+      <h2>4. Por dónde empezar</h2><div class="linea-falsa"></div>
+      <h2>5. Próximo paso</h2><div class="linea-falsa corta"></div>
+      <h2>6. Referencias</h2><div class="linea-falsa"></div>
+    </div>
+  </section>
+
+  <!-- Pantalla 5: hoja -->
+  <section id="v-hoja" data-vista class="oculto">
+    <div class="pasos"><span class="hecho"></span><span class="hecho"></span><span class="hecho"></span></div>
+    <span class="antetitulo">Paso 3 de 3</span>
+    <h1>Su hoja está lista</h1>
+    <p class="guia">Puede descargarla en Word, copiar el texto o hacer otra consulta con el mismo registro.</p>
+    <div class="acciones">
+      <button class="boton" id="b-word">Descargar en Word</button>
+      <button class="boton secundario" id="b-copiar">Copiar el texto</button>
+      <button class="boton texto" id="b-nueva">Hacer otra consulta</button>
+    </div>
+    <div id="aviso-hoja" class="aviso oculto"></div>
+    <article class="hoja" id="hoja"></article>
+  </section>
+
+</main>
+
+<footer><div class="pie-in">
+  <strong>Asistente Inteligente para la Innovación Pública Local.</strong> Prototipo de la Caja de Herramientas para Municipios del proyecto Municipios que Incluyen: Innovación Digital Juvenil para la Democracia Local. Ashanti Perú, Desafío Colaborativo FIF Perú 2026-2027.<br>
+  Las recomendaciones se basan únicamente en las fichas de buenas prácticas de la Caja de Herramientas. No sustituyen la consulta con las organizaciones del territorio.
+  <div id="logos-aliados"></div>
+</div></footer>
+
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/api.js"></script>
+<script src="js/hoja-docx.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
