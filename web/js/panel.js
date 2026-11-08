@@ -63,10 +63,39 @@
       const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, nombreExcel.slice(0, 30));
       XLSX.writeFile(wb, `${nombreExcel}_${new Date().toISOString().slice(0, 10)}.xlsx`);
     }));
-    return `<div class="barra-tabla"><span>${filas.length} registros</span><button class="boton secundario" id="${id}">Descargar Excel</button></div><div class="tabla-wrap"><table><thead><tr>${th}</tr></thead><tbody>${tr || '<tr><td colspan="' + cols.length + '">Sin registros todavía.</td></tr>'}</tbody></table></div>`;
+    return `<div class="barra-tabla"><span>${filas.length} registros <span class="previsual">Previsualización · el detalle completo está en el Excel</span></span><button class="boton secundario" id="${id}">Descargar Excel</button></div><div class="tabla-wrap"><table><thead><tr>${th}</tr></thead><tbody>${tr || '<tr><td colspan="' + cols.length + '">Sin registros todavía.</td></tr>'}</tbody></table></div>`;
   }
   function conteo(arr, f) { const m = {}; arr.forEach(x => { const k = f(x); if (k == null) return; (Array.isArray(k) ? k : [k]).forEach(kk => m[kk] = (m[kk] || 0) + 1); }); return Object.entries(m).sort((a, b) => b[1] - a[1]); }
-  function barras(pares, titulo) { const max = Math.max(1, ...pares.map(p => p[1])); return `<div class="kpi"><span>${titulo}</span><ul class="barras">${pares.map(([k, n]) => `<li><span>${k}</span><b>${n}</b><i style="width:${Math.round(n / max * 100)}%"></i></li>`).join('') || '<li>Sin datos</li>'}</ul></div>`; }
+  const graficas = [];
+  function grafica(pares, titulo, color) {
+    const id = 'g' + Math.random().toString(36).slice(2);
+    graficas.push({ id, pares, titulo, color });
+    return `<div class="grafica"><div class="cab"><span>${titulo}</span><span><button data-png="${id}">Descargar imagen</button> <button data-xls="${id}">Descargar Excel</button></span></div><canvas id="${id}"></canvas></div>`;
+  }
+  function pintarGraficas() {
+    Chart.defaults.font.family = "'Barlow', system-ui, sans-serif"; Chart.defaults.font.size = 13; Chart.defaults.color = '#333333';
+    for (const g of graficas) {
+      const horizontal = g.pares.length > 3;
+      const cv = document.getElementById(g.id); if (horizontal) cv.style.height = Math.max(240, g.pares.length * 38 + 40) + 'px';
+      const corto = v => { const t = String(v); return t.length > 34 ? t.slice(0, 32) + '…' : t; };
+      new Chart(cv, {
+        type: 'bar',
+        data: { labels: g.pares.map(p => p[0]), datasets: [{ data: g.pares.map(p => p[1]), backgroundColor: g.color, borderRadius: 3, maxBarThickness: 36 }] },
+        options: { indexAxis: horizontal ? 'y' : 'x', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' ' + c.raw } } },
+          scales: { x: { grid: { display: !horizontal, color: '#EEEEEC' }, ticks: { precision: 0 } }, y: { grid: { display: horizontal, color: '#EEEEEC' }, ticks: { precision: 0, autoSkip: false, callback: function (v) { return horizontal ? corto(this.getLabelForValue(v)) : v; } } } } }
+      });
+    }
+    document.querySelectorAll('[data-png]').forEach(b => b.addEventListener('click', () => {
+      const g = graficas.find(x => x.id === b.dataset.png); const cv = document.getElementById(g.id);
+      const out = document.createElement('canvas'); out.width = cv.width; out.height = cv.height; const cx = out.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, out.width, out.height); cx.drawImage(cv, 0, 0);
+      const a = document.createElement('a'); a.download = g.titulo.replace(/\s+/g, '_') + '.png'; a.href = out.toDataURL('image/png'); a.click();
+    }));
+    document.querySelectorAll('[data-xls]').forEach(b => b.addEventListener('click', () => {
+      const g = graficas.find(x => x.id === b.dataset.xls);
+      const ws = XLSX.utils.json_to_sheet(g.pares.map(([k, n]) => ({ Categoría: k, Cantidad: n })));
+      const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Datos'); XLSX.writeFile(wb, g.titulo.replace(/\s+/g, '_') + '.xlsx');
+    }));
+  }
 
   async function arrancar() {
     const u = await sesion();
@@ -89,7 +118,17 @@
         <div class="kpi"><b>${d.descargas.filter(x => x.tipo === 'word').length}</b><span>Hojas descargadas en Word</span></div>
         <div class="kpi"><b>${d.consultas.length ? 'US$ ' + (costo / d.consultas.length).toFixed(3) : '–'}</b><span>Costo medio por consulta (API)</span></div>
       </div>
-      <div class="dos">${barras(porPerfil, 'Personas registradas por perfil')}${barras(porDep, 'Personas registradas por departamento')}${barras(temas, 'Temas más consultados')}${barras(citadas, 'Buenas prácticas más citadas')}</div>`;
+      <div class="dos">${grafica(porPerfil, 'Personas registradas por perfil', '#6E2F80')}${grafica(porDep, 'Personas registradas por departamento', '#58A068')}${grafica(temas, 'Temas más consultados', '#C8161C')}${grafica(citadas, 'Buenas prácticas más citadas', '#F0A020')}</div>
+      <div class="barra-tabla" style="margin-top:16px"><span class="previsual">Previsualización</span><button class="boton secundario" id="x-todo">Descargar todos los datos en Excel</button></div>`;
+    pintarGraficas();
+    $('#x-todo').addEventListener('click', () => {
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet([{ Indicador: 'Personas registradas', Valor: d.personas.length }, { Indicador: 'Consultas realizadas', Valor: d.consultas.length }, { Indicador: 'Hojas descargadas en Word', Valor: d.descargas.filter(x => x.tipo === 'word').length }, { Indicador: 'Costo medio por consulta (US$)', Valor: d.consultas.length ? +(costo / d.consultas.length).toFixed(4) : 0 }]), 'Indicadores');
+      for (const g of graficas) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(g.pares.map(([k, n]) => ({ Categoría: k, Cantidad: n }))), g.titulo.slice(0, 30));
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(d.consultas.map(c => ({ Fecha: fecha(c.creado), Persona: c.persona?.nombres, Perfil: PERFIL[c.perfil], Institución: c.persona?.institucion, Departamento: c.persona?.departamento, Temas: (c.temas || []).map(nombreEje).join('; '), Población: c.poblacion, 'Lo que quiere lograr': c.logro, Prioridades: c.prioridades, Condiciones: c.condiciones, 'Texto propio': c.texto_propio, 'Buenas prácticas citadas': (c.fichas_citadas || []).join(', '), Descargas: descPorConsulta[c.id] || 0 }))), 'Consultas');
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(d.personas.map(p => ({ 'Fecha de registro': fecha(p.creado), 'Nombres y apellidos': p.nombres, Correo: p.correo, Perfil: PERFIL[p.perfil], 'Municipalidad u organización': p.institucion, 'Cargo o rol': p.cargo, Departamento: p.departamento, Consentimiento: fecha(p.consentimiento_fecha) }))), 'Usuarios');
+      XLSX.writeFile(wb, `Asistente_Inteligente_datos_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    });
 
     // Consultas
     const colsC = [

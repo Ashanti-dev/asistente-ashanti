@@ -25,6 +25,7 @@
   DEPARTAMENTOS.forEach(d => { const o = document.createElement('option'); o.value = d; o.textContent = d; sel.appendChild(o); });
 
   // Pantalla 1
+  document.getElementById('atajo').addEventListener('click', e => { e.preventDefault(); document.getElementById('elegir').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
   document.querySelectorAll('.perfil').forEach(b => b.addEventListener('click', () => {
     estado.perfil = b.dataset.perfil;
     const n = nombrePerfil(estado.perfil);
