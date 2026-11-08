@@ -10,3 +10,5 @@ node_modules/
 dist/
 .wrangler/
 supabase/.temp/
+# Salidas de prueba con la API (se revisan, no se versionan)
+pruebas/salidas/
