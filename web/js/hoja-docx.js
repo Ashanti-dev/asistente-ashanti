@@ -21,14 +21,16 @@ window.HojaDocx = (function () {
     const lineas = md.split(/\r?\n/);
     const parrafos = [];
     let primeraMeta = false;
+    let lista = 0, enLista = false;
     const h1 = { font: DISPLAY, size: 40, bold: true, color: TINTA };
     for (let i = 0; i < lineas.length; i++) {
       const l = lineas[i];
       if (!l.trim()) continue;
       let m;
+      if (!/^\d+\.\s/.test(l)) enLista = false;
       if ((m = l.match(/^# (.*)/))) { parrafos.push(new D.Paragraph({ children: [new D.TextRun({ text: m[1], ...h1 })], spacing: { after: 120 } })); primeraMeta = true; continue; }
       if ((m = l.match(/^## (.*)/))) { parrafos.push(new D.Paragraph({ children: [new D.TextRun({ text: m[1], font: DISPLAY, size: 28, bold: true, color: MORADO })], spacing: { before: 360, after: 120 } })); continue; }
-      if ((m = l.match(/^(\d+)\.\s+(.*)/))) { parrafos.push(new D.Paragraph({ children: runs(m[2]), numbering: { reference: "num", level: 0 }, spacing: { after: 120 }, alignment: D.AlignmentType.JUSTIFIED })); continue; }
+      if ((m = l.match(/^(\d+)\.\s+(.*)/))) { if (!enLista) { lista++; enLista = true; } parrafos.push(new D.Paragraph({ children: runs(m[2]), numbering: { reference: "num", level: 0, instance: lista }, spacing: { after: 120 }, alignment: D.AlignmentType.JUSTIFIED })); continue; }
       if ((m = l.match(/^[-*]\s+(.*)/))) { parrafos.push(new D.Paragraph({ children: runs(m[1]), bullet: { level: 0 }, spacing: { after: 120 } })); continue; }
       if (/^Esta hoja se basa únicamente/.test(l)) { parrafos.push(new D.Paragraph({ children: [new D.TextRun({ text: l, font: FUENTE, size: 18, color: GRIS, italics: true })], spacing: { before: 360 }, border: { top: { style: D.BorderStyle.SINGLE, size: 4, color: "D9D1C5", space: 8 } } })); continue; }
       if (primeraMeta) { parrafos.push(new D.Paragraph({ children: [new D.TextRun({ text: l, font: FUENTE, size: 20, color: GRIS })], spacing: { after: 240 } })); primeraMeta = false; continue; }
