@@ -276,3 +276,15 @@ dialog .cerrar{position:sticky;top:0;float:right;margin:8px}
 .resultado b:last-of-type{color:var(--rojo);font-size:1.45rem}
 
 .kpi.conf input[type=number]{max-width:200px}
+
+/* ===== Botones de perfil con los colores del logo ===== */
+.perfil[data-perfil=autoridades]{background:var(--rojo);border-color:var(--rojo)}
+.perfil[data-perfil=sociedad_civil]{background:var(--morado);border-color:var(--morado)}
+.perfil small{color:rgba(255,255,255,.88)}
+.perfil{box-shadow:0 6px 16px -10px rgba(16,1,0,.55);transition:background .15s,border-color .15s,transform .15s,box-shadow .15s}
+.perfil[data-perfil=autoridades]:hover,.perfil[data-perfil=autoridades]:focus-visible{background:var(--rojo-oscuro);border-color:var(--rojo-oscuro)}
+.perfil[data-perfil=sociedad_civil]:hover,.perfil[data-perfil=sociedad_civil]:focus-visible{background:#55216A;border-color:#55216A}
+.perfil:hover{transform:translateY(-2px);box-shadow:0 12px 22px -12px rgba(16,1,0,.6)}
+.perfil .flecha{background:rgba(255,255,255,.18);border-radius:50%;width:44px;height:44px;display:grid;place-items:center;font-size:1.5rem}
+.perfil:focus-visible{box-shadow:0 0 0 3px #fff,0 0 0 6px var(--tinta)}
+@media(prefers-reduced-motion:reduce){.perfil:hover{transform:none}}
