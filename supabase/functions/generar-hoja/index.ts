@@ -22,12 +22,18 @@ Deno.serve(async (req) => {
     const texto_propio = String(c.texto_propio ?? "").slice(0, 1500);
     for (const k of ["poblacion", "logro", "prioridades", "condiciones"]) c[k] = String(c[k] ?? "").slice(0, 500);
 
-    // Solo personas registradas, máximo 10 consultas por persona en 24 horas
+    // Solo personas registradas, con los límites que fija el equipo en el panel (tabla configuracion)
     if (!c.persona_id) return json({ error: "Falta el registro." }, 400);
     const { data: persona } = await sb.from("personas").select("id").eq("id", c.persona_id).maybeSingle();
     if (!persona) return json({ error: "Registro no encontrado." }, 403);
-    const { count } = await sb.from("consultas").select("id", { count: "exact", head: true }).eq("persona_id", c.persona_id).gte("creado", new Date(Date.now() - 864e5).toISOString());
-    if ((count ?? 0) >= 10) return json({ error: "Alcanzó el límite de 10 consultas por día." }, 429);
+    const { data: conf } = await sb.from("configuracion").select("clave, valor");
+    const cfg = (k: string, def: number) => Number(conf?.find((x) => x.clave === k)?.valor ?? def);
+    const desde = new Date(Date.now() - 864e5).toISOString();
+    const limPersona = cfg("limite_diario_por_persona", 10), limTotal = cfg("limite_diario_total", 200);
+    const { count: nPersona } = await sb.from("consultas").select("id", { count: "exact", head: true }).eq("persona_id", c.persona_id).gte("creado", desde);
+    if ((nPersona ?? 0) >= limPersona) return json({ error: `Alcanzó el límite de ${limPersona} consultas por día. Puede volver a consultar mañana.` }, 429);
+    const { count: nTotal } = await sb.from("consultas").select("id", { count: "exact", head: true }).gte("creado", desde);
+    if ((nTotal ?? 0) >= limTotal) return json({ error: "La herramienta alcanzó el límite de consultas de hoy. Intente de nuevo mañana." }, 429);
 
     // Fichas de los ejes marcados (y las demás como referencia secundaria)
     const { data: fichas, error: eF } = await sb.from("fichas").select("*").eq("activa", true).order("numero");

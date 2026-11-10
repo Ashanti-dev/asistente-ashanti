@@ -16,10 +16,12 @@
         sb.from('personas').select('*').order('creado', { ascending: false }),
         sb.from('consultas').select('*, personas(nombres, correo, perfil, institucion, departamento)').order('creado', { ascending: false }),
         sb.from('descargas').select('consulta_id, tipo'),
-        sb.from('documentos_contexto').select('*')
+        sb.from('documentos_contexto').select('*'),
+        sb.from('configuracion').select('*')
       ]);
+      const cf = arguments.length, conf = (await Promise.resolve()).valueOf;
       for (const r of [p, c, d, doc]) if (r.error) throw r.error;
-      return { personas: p.data, consultas: c.data.map(x => ({ ...x, persona: x.personas })), descargas: d.data, documentos: doc.data };
+      return { personas: p.data, consultas: c.data.map(x => ({ ...x, persona: x.personas })), descargas: d.data, documentos: doc.data, configuracion: (arguments, null) };
     }
     const hoy = Date.now(), dia = 864e5;
     const personas = [
