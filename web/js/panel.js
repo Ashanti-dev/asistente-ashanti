@@ -12,16 +12,15 @@
   // ---- Datos (reales o de muestra) ----
   async function datos() {
     if (real) {
-      const [p, c, d, doc] = await Promise.all([
+      const [p, c, d, doc, cfg] = await Promise.all([
         sb.from('personas').select('*').order('creado', { ascending: false }),
         sb.from('consultas').select('*, personas(nombres, correo, perfil, institucion, departamento)').order('creado', { ascending: false }),
         sb.from('descargas').select('consulta_id, tipo'),
         sb.from('documentos_contexto').select('*'),
         sb.from('configuracion').select('*')
       ]);
-      const cf = arguments.length, conf = (await Promise.resolve()).valueOf;
-      for (const r of [p, c, d, doc]) if (r.error) throw r.error;
-      return { personas: p.data, consultas: c.data.map(x => ({ ...x, persona: x.personas })), descargas: d.data, documentos: doc.data, configuracion: (arguments, null) };
+      for (const r of [p, c, d, doc, cfg]) if (r.error) throw r.error;
+      return { personas: p.data, consultas: c.data.map(x => ({ ...x, persona: x.personas })), descargas: d.data, documentos: doc.data, configuracion: cfg.data };
     }
     const hoy = Date.now(), dia = 864e5;
     const personas = [
@@ -34,7 +33,7 @@
       { id: 102, creado: personas[1].creado, persona: personas[1], perfil: 'sociedad_civil', temas: ['lucha_contra_discriminacion', 'enfoque_genero'], poblacion: 'Mujeres jóvenes afroperuanas', logro: 'Atención sin discriminación y derivación correcta', prioridades: 'Gerencia de Desarrollo Social', condiciones: '15 integrantes, sin presupuesto', texto_propio: 'Queremos llevar una propuesta concreta.', fichas_citadas: [8, 5, 6], hoja_markdown: null, tokens_entrada: 13020, tokens_salida: 2590, costo_usd: 0.08 },
       { id: 103, creado: personas[2].creado, persona: personas[2], perfil: 'autoridades', temas: ['participacion_ciudadana'], poblacion: 'Juntas vecinales', logro: 'Reactivar las juntas', prioridades: 'Seguridad y limpieza', condiciones: 'Sin presupuesto adicional', texto_propio: '', fichas_citadas: [7, 4], hoja_markdown: null, tokens_entrada: 10110, tokens_salida: 1980, costo_usd: 0.06 }
     ];
-    return { personas, consultas, descargas: [{ consulta_id: 101, tipo: 'word' }, { consulta_id: 102, tipo: 'word' }, { consulta_id: 102, tipo: 'copia' }], documentos: [] };
+    return { personas, consultas, descargas: [{ consulta_id: 101, tipo: 'word' }, { consulta_id: 102, tipo: 'word' }, { consulta_id: 102, tipo: 'copia' }], documentos: [], configuracion: [{ clave: 'limite_diario_por_persona', valor: 10 }, { clave: 'limite_diario_total', valor: 200 }] };
   }
 
   // ---- Sesión ----
@@ -53,7 +52,7 @@
   // ---- Pestañas ----
   document.querySelectorAll('.pestanas button').forEach(b => b.addEventListener('click', () => {
     document.querySelectorAll('.pestanas button').forEach(x => x.classList.toggle('activa', x === b));
-    document.querySelectorAll('[data-tab]').forEach(t => t.classList.toggle('oculto', t.id !== 't-' + b.dataset.tab));
+    document.querySelectorAll('div[data-tab]').forEach(t => t.classList.toggle('oculto', t.id !== 't-' + b.dataset.tab));
   }));
 
   function tabla(cols, filas, nombreExcel) {
@@ -151,6 +150,44 @@
     const colsF = [{ t: 'N.°', v: f => f.numero }, { t: 'Nombre de la acción', v: f => f.nombre_accion, recorte: true }, { t: 'Lugar', v: f => f.lugar, recorte: true }, { t: 'Ejes temáticos', v: f => f.ejes.map(nombreEje).join('; '), recorte: true }, { t: 'Reconocimiento', v: f => f.reconocimiento, recorte: true }, { t: 'Fuentes', v: f => f.fuentes_verificacion.length }];
     $('#t-contenido').innerHTML = `<p class="aviso">Las 8 fichas de buenas prácticas de la Caja de Herramientas. La carga de fichas y documentos nuevos desde este panel entra con el Producto 3.</p>` + tabla(colsF, fichas, 'Fichas') +
       `<h2>Documentos de contexto</h2>` + tabla([{ t: 'Documento', v: x => x.nombre }, { t: 'Eje', v: x => nombreEje(x.eje) }, { t: 'Fecha de carga', v: x => fecha(x.creado) }], d.documentos, 'Documentos');
-  }
+
+    // Configuración y simulador de gasto
+    const valor = k => Number((d.configuracion.find(x => x.clave === k) || {}).valor ?? 0);
+    const costoMedio = d.consultas.filter(c => +c.costo_usd > 0).length ? d.consultas.reduce((a, c) => a + (+c.costo_usd || 0), 0) / d.consultas.filter(c => +c.costo_usd > 0).length : 0.05;
+    $('#t-configuracion').innerHTML = `
+      <div class="dos">
+        <div class="kpi conf">
+          <h3>Límites de consultas</h3>
+          <p class="ayuda">Protegen el saldo de la API. Los cambios rigen desde la siguiente consulta.</p>
+          <div class="campo"><label for="c-persona">Consultas por persona al día</label><input type="number" min="1" max="100" id="c-persona" value="${valor('limite_diario_por_persona')}"></div>
+          <div class="campo"><label for="c-total">Consultas totales al día (toda la herramienta)</label><input type="number" min="1" max="5000" id="c-total" value="${valor('limite_diario_total')}"></div>
+          <button class="boton" id="c-guardar">Guardar límites</button>
+          <p class="ayuda" id="c-estado"></p>
+        </div>
+        <div class="kpi conf simulador">
+          <h3>¿Cuánto cuesta al mes?</h3>
+          <p class="ayuda">Calcule el gasto según cuántas consultas espera. El costo por consulta sale ${d.consultas.length ? 'del promedio real de la herramienta' : 'del estimado del plan de trabajo, hasta que haya consultas reales'}.</p>
+          <div class="campo"><label for="s-dia">Consultas al día</label><input type="number" min="0" id="s-dia" value="20"></div>
+          <div class="campo"><label for="s-costo">Costo por consulta (US$)</label><input type="number" min="0" step="0.001" id="s-costo" value="${costoMedio.toFixed(3)}"></div>
+          <div class="campo"><label for="s-tc">Tipo de cambio (S/ por US$)</label><input type="number" min="0" step="0.01" id="s-tc" value="3.75"></div>
+          <div class="resultado"><span>Consumo de la API al mes</span><b id="s-api">–</b><span>Supabase, plan de pago</span><b>US$ 25,00</b><span>Total estimado al mes</span><b id="s-total">–</b></div>
+          <p class="ayuda">El consumo de la API se paga por adelantado en la consola de Anthropic. Si el saldo se acaba, la herramienta deja de generar hojas hasta recargar.</p>
+        </div>
+      </div>`;
+    const fmt = (n, m) => { const [e, d] = n.toFixed(2).split('.'); return m + ' ' + e.replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ',' + d; };
+    function simular() {
+      const dia = +$('#s-dia').value || 0, costo = +$('#s-costo').value || 0, tc = +$('#s-tc').value || 0;
+      const api = dia * 30 * costo, total = api + 25;
+      $('#s-api').textContent = fmt(api, 'US$') + ' (' + fmt(api * tc, 'S/') + ')';
+      $('#s-total').textContent = fmt(total, 'US$') + ' (' + fmt(total * tc, 'S/') + ')';
+    }
+    ['#s-dia', '#s-costo', '#s-tc'].forEach(x => $(x).addEventListener('input', simular)); simular();
+    $('#c-guardar').addEventListener('click', async () => {
+      const per = Math.max(1, +$('#c-persona').value || 1), tot = Math.max(1, +$('#c-total').value || 1);
+      if (!real) { $('#c-estado').textContent = 'Modo de prueba: no se guarda.'; return; }
+      const r1 = await sb.from('configuracion').update({ valor: per, actualizado: new Date().toISOString() }).eq('clave', 'limite_diario_por_persona');
+      const r2 = await sb.from('configuracion').update({ valor: tot, actualizado: new Date().toISOString() }).eq('clave', 'limite_diario_total');
+      $('#c-estado').textContent = (r1.error || r2.error) ? 'No se pudo guardar. Revise su conexión.' : 'Guardado. Rige desde la siguiente consulta.';
+    });  }
   arrancar();
 })();

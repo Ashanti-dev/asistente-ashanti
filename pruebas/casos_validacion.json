@@ -1,0 +1,20 @@
+[
+  {"id": "A1", "perfil": "autoridades", "temas": ["participacion_juvenil", "interculturalidad"], "departamento": "Ayacucho", "institucion": "Municipalidad Provincial de Huamanga", "cargo": "Subgerente de Participación Vecinal",
+   "poblacion": "Jóvenes de 16 a 29 años de comunidades quechuahablantes y barrios periféricos", "logro": "Que los jóvenes propongan y decidan parte del presupuesto participativo 2027", "prioridades": "El proceso de presupuesto participativo de marzo de 2027", "condiciones": "Equipo de tres personas, sin partida propia; aliados: la UNSCH y dos colectivos juveniles",
+   "texto_propio": "Las convocatorias salen en castellano y por Facebook. Proyectos aprobados en años anteriores no se ejecutaron y la gente desconfía."},
+  {"id": "A2", "perfil": "autoridades", "temas": ["fortalecimiento_democratico", "participacion_ciudadana"], "departamento": "Lima", "institucion": "Municipalidad Distrital de El Agustino", "cargo": "Regidor",
+   "poblacion": "Juntas vecinales y organizaciones afroperuanas del distrito", "logro": "Reactivar las juntas vecinales y que la municipalidad responda a sus pedidos", "prioridades": "Seguridad y limpieza de espacios públicos", "condiciones": "Sin presupuesto adicional; hay un área de participación vecinal con dos personas",
+   "texto_propio": ""},
+  {"id": "A3", "perfil": "autoridades", "temas": ["lucha_contra_discriminacion"], "departamento": "Ica", "institucion": "Municipalidad Distrital de El Carmen", "cargo": "Gerente de Desarrollo Social",
+   "poblacion": "Mujeres afroperuanas", "logro": "Mejorar la atención a mujeres que denuncian violencia", "prioridades": "La DEMUNA y el CEM", "condiciones": "Personal reducido",
+   "texto_propio": "Queremos un centro como el de Goiás. ¿Cuánto cuesta y cuántas mujeres atendió?"},
+  {"id": "S1", "perfil": "sociedad_civil", "temas": ["lucha_contra_discriminacion", "enfoque_genero"], "departamento": "Lima", "institucion": "Colectivo de jóvenes afroperuanas (independiente)", "cargo": "Coordinadora",
+   "poblacion": "Mujeres jóvenes afroperuanas de Lima Metropolitana", "logro": "Que la municipalidad atienda sin discriminación y derive bien los casos de violencia", "prioridades": "Gerencia de Desarrollo Social y mesa de concertación del distrito", "condiciones": "15 integrantes, sin presupuesto; contacto con una red afroperuana y con el CEM",
+   "texto_propio": "Varias compañeras fueron a la municipalidad o a la comisaría y las trataron mal o las mandaron de un lado a otro. Queremos llevar una propuesta concreta."},
+  {"id": "S2", "perfil": "sociedad_civil", "temas": ["participacion_juvenil"], "departamento": "Cusco", "institucion": "independiente", "cargo": "",
+   "poblacion": "Jóvenes universitarios", "logro": "Que haya un presupuesto para jóvenes", "prioridades": "El alcalde", "condiciones": "Ninguno",
+   "texto_propio": "No sé bien cómo empezar."},
+  {"id": "S3", "perfil": "sociedad_civil", "temas": ["participacion_ciudadana", "interculturalidad"], "departamento": "Puno", "institucion": "Federación de comunidades campesinas", "cargo": "Secretaria de actas",
+   "poblacion": "Comunidades aimaras de la zona rural", "logro": "Que las mujeres de las comunidades participen en el presupuesto participativo con propuestas propias", "prioridades": "La municipalidad provincial y el comité de vigilancia", "condiciones": "Organización con 12 comunidades; el idioma y las distancias son barreras",
+   "texto_propio": "Las asambleas son en castellano y las mujeres casi no hablan. Algunas no saben leer."}
+]

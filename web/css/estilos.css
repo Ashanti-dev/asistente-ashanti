@@ -12,6 +12,12 @@
   --rojo:#C8161C;
   --rojo-oscuro:#A3121A;
   --morado:#6E2F80;
+  --ambar:#F0A020;
+  --ambar-claro:#FFF4DE;
+  --ambar-borde:#F2CF86;
+  --verde:#3E8A55;
+  --verde-claro:#EAF5EC;
+  --morado-claro:#F3ECF6;
   --firma:linear-gradient(180deg,#F0A020 0%,#58A068 50%,#79368C 100%);
   --firma-h:linear-gradient(90deg,#F0A020 0%,#58A068 50%,#79368C 100%);
   --display:'Barlow Semi Condensed','Barlow',system-ui,sans-serif;
@@ -85,7 +91,7 @@ form{margin-top:var(--s4)}
 .campo label,.campo .etiqueta{display:block;font-weight:700;font-size:1.05rem;margin-bottom:var(--s1)}
 .campo .ayuda{color:var(--gris);font-size:.95rem;margin:-2px 0 var(--s1)}
 .opcional{color:var(--gris);font-weight:400;font-size:.9rem}
-input[type=text],input[type=email],select,textarea{width:100%;font:inherit;color:var(--tinta);background:var(--blanco);border:1.5px solid var(--tinta-2);border-radius:4px;padding:12px 14px;min-height:52px}
+input[type=text],input[type=email],input[type=number],input[type=password],select,textarea{width:100%;font:inherit;color:var(--tinta);background:var(--blanco);border:1.5px solid var(--tinta-2);border-radius:4px;padding:12px 14px;min-height:52px}
 textarea{min-height:160px;resize:vertical;line-height:1.5}
 input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none;border-color:var(--rojo);box-shadow:0 0 0 3px rgba(200,22,28,.18)}
 .contador{text-align:right;color:var(--gris);font-size:.9rem;margin-top:4px}
@@ -230,3 +236,43 @@ dialog .cerrar{position:sticky;top:0;float:right;margin:8px}
   .portada-accion{padding:var(--s4);border:1px solid var(--linea);border-radius:8px;background:var(--papel-2)}
   .portada-accion h2{font-size:1.6rem;margin-bottom:var(--s2)}
 }
+
+/* ===== Color (v4): calidez para invitar a participar ===== */
+.cabecera .proyecto{color:var(--morado)}
+.portada .antetitulo{color:var(--morado);font-weight:500}
+.claves li{border-left:none;border-image:none;padding-left:22px;position:relative}
+.claves li::before{content:"";position:absolute;left:0;top:7px;width:10px;height:10px;border-radius:50%}
+.claves li:nth-child(1)::before{background:var(--ambar)}
+.claves li:nth-child(2)::before{background:var(--verde)}
+.claves li:nth-child(3)::before{background:var(--morado)}
+@media(min-width:1000px){
+  .portada-accion{background:var(--ambar-claro);border:1px solid var(--ambar-borde);position:relative;overflow:hidden;box-shadow:0 18px 40px -28px rgba(168,100,0,.45)}
+  .portada-accion::before{content:"";position:absolute;left:0;right:0;top:0;height:6px;background:var(--firma-h)}
+}
+@media(max-width:999px){
+  .portada-accion{background:var(--ambar-claro);border:1px solid var(--ambar-borde);border-radius:8px;padding:20px 16px;position:relative;overflow:hidden}
+  .portada-accion::before{content:"";position:absolute;left:0;right:0;top:0;height:5px;background:var(--firma-h)}
+}
+.pasos-mini li::before{color:var(--rojo)}
+.casilla:has(input:checked){border-color:var(--ambar);background:var(--ambar-claro)}
+.pasos span.hecho{background:var(--firma-h)}
+.consentimiento{background:var(--morado-claro)}
+.aviso{background:var(--morado-claro)}
+.espera .estado{color:var(--morado)}
+/* Panel */
+.kpi{border-top:4px solid var(--ambar)}
+.kpis .kpi:nth-child(2){border-top-color:var(--verde)}
+.kpis .kpi:nth-child(3){border-top-color:var(--morado)}
+.kpis .kpi:nth-child(4){border-top-color:var(--rojo)}
+.kpi.conf h3{font-family:var(--display);font-size:1.25rem;margin:0 0 6px}
+.kpi.conf .ayuda{color:var(--gris);font-size:14px}
+.kpi.conf .campo{margin-bottom:16px}
+.kpi.conf input{min-height:44px}
+.kpi.conf .boton{width:auto;min-height:44px;font-size:15px}
+.simulador{background:var(--ambar-claro);border-color:var(--ambar-borde)}
+.resultado{display:grid;grid-template-columns:1fr auto;gap:8px 16px;align-items:baseline;background:#fff;border:1px solid var(--ambar-borde);border-radius:6px;padding:16px;margin:8px 0 12px}
+.resultado span{color:var(--tinta-2);font-size:14px}
+.resultado b{font-family:var(--display);font-size:1.2rem;text-align:right}
+.resultado b:last-of-type{color:var(--rojo);font-size:1.45rem}
+
+.kpi.conf input[type=number]{max-width:200px}
