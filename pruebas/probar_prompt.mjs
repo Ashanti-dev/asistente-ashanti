@@ -40,13 +40,13 @@ async function correr(nombreCaso) {
   const t0 = Date.now();
   const r = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST", headers: { "x-api-key": KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-    body: JSON.stringify({ model: MODELO, max_tokens: 3000, temperature: 0.4,
+    body: JSON.stringify({ model: MODELO, max_tokens: 6000, thinking: { type: "between_tools" },
       system: [{ type: "text", text: instrucciones }, { type: "text", text: contexto, cache_control: { type: "ephemeral" } }],
       messages: [{ role: "user", content: `Redacta la hoja de recomendaciones para esta consulta del formulario guía:\n\n${consulta}` }] }),
   });
   if (!r.ok) throw new Error(`API ${r.status}: ${await r.text()}`);
   const data = await r.json();
-  const hoja = data.content.map((b) => b.text ?? "").join("");
+  const hoja = data.content.filter((b) => b.type === "text").map((b) => b.text).join("").trim();
   const u = data.usage ?? {};
   const costo = ((u.input_tokens ?? 0) * 3 + (u.cache_creation_input_tokens ?? 0) * 3.75 + (u.cache_read_input_tokens ?? 0) * 0.3 + (u.output_tokens ?? 0) * 15) / 1e6;
 

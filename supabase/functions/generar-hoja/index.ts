@@ -7,6 +7,8 @@ const MODELO = Deno.env.get("MODELO_IA") ?? "claude-sonnet-5-5";
 const PRECIO_ENTRADA = 3 / 1_000_000;   // US$ por token (referencial, ajustar al precio vigente)
 const PRECIO_SALIDA = 15 / 1_000_000;
 const CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type" };
+// Clave de la API: acepta el nombre estándar y el que se usó al crear el secreto en el panel de Supabase
+const CLAVE_API = Deno.env.get("ANTHROPIC_API_KEY") ?? Deno.env.get("Anthropic-API-Key-Ashanti") ?? Deno.env.get("ANTHROPIC_API_KEY_ASHANTI") ?? "";
 const PERFIL: Record<string, string> = { autoridades: "Autoridades y funcionarios municipales", sociedad_civil: "Sociedad civil" };
 
 import { INSTRUCCIONES } from "./instrucciones.ts";
@@ -28,6 +30,9 @@ Deno.serve(async (req) => {
     if (!persona) return json({ error: "Registro no encontrado." }, 403);
     const { data: conf } = await sb.from("configuracion").select("clave, valor");
     const cfg = (k: string, def: number) => Number(conf?.find((x) => x.clave === k)?.valor ?? def);
+    // Instrucciones vigentes: las de la base (se afinan sin volver a desplegar); si no hay, las del archivo
+    const instrucciones = String(conf?.find((x) => x.clave === "instrucciones")?.valor ?? INSTRUCCIONES);
+    const parametros = (conf?.find((x) => x.clave === "parametros_modelo")?.valor ?? { max_tokens: 6000, thinking: { type: "between_tools" } }) as Record<string, unknown>;
     const desde = new Date(Date.now() - 864e5).toISOString();
     const limPersona = cfg("limite_diario_por_persona", 10), limTotal = cfg("limite_diario_total", 200);
     const { count: nPersona } = await sb.from("consultas").select("id", { count: "exact", head: true }).eq("persona_id", c.persona_id).gte("creado", desde);
@@ -76,21 +81,26 @@ Deno.serve(async (req) => {
 
     const r = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
-      headers: { "x-api-key": Deno.env.get("ANTHROPIC_API_KEY")!, "anthropic-version": "2023-06-01", "content-type": "application/json" },
+      headers: { "x-api-key": CLAVE_API, "anthropic-version": "2023-06-01", "content-type": "application/json" },
       body: JSON.stringify({
-        model: MODELO, max_tokens: 3000, temperature: 0.4,
-        system: [{ type: "text", text: INSTRUCCIONES }, { type: "text", text: contexto, cache_control: { type: "ephemeral" } }],
+        model: MODELO, ...parametros,
+        system: [{ type: "text", text: instrucciones }, { type: "text", text: contexto, cache_control: { type: "ephemeral" } }],
         messages: [{ role: "user", content: `Redacta la hoja de recomendaciones para esta consulta del formulario guía:\n\n${consulta}` }],
       }),
     });
+    if (!CLAVE_API) throw new Error("Falta el secreto ANTHROPIC_API_KEY en Supabase");
     if (!r.ok) throw new Error(`API ${r.status}: ${await r.text()}`);
     const data = await r.json();
-    const hoja: string = data.content.map((b: any) => b.text ?? "").join("");
+    const hoja: string = data.content.filter((b: any) => b.type === "text").map((b: any) => b.text).join("").trim();
+    if (!hoja) throw new Error(`Respuesta sin texto (stop_reason ${data.stop_reason}; bloques ${data.content.map((b: any) => b.type).join(",")})`);
     const citadas = [...new Set([...hoja.matchAll(/\[Ficha (\d+)/g)].map((m) => Number(m[1])))];
-    const te = data.usage?.input_tokens ?? 0, ts = data.usage?.output_tokens ?? 0;
+    const u = data.usage ?? {};
+    const cc = u.cache_creation_input_tokens ?? 0, cr = u.cache_read_input_tokens ?? 0;
+    const te = (u.input_tokens ?? 0) + cc + cr, ts = u.output_tokens ?? 0;
+    const costo = ((u.input_tokens ?? 0) + cc * 1.25 + cr * 0.1) * PRECIO_ENTRADA + ts * PRECIO_SALIDA;
     await sb.from("consultas").update({
       hoja_markdown: hoja, fichas_citadas: citadas, tokens_entrada: te, tokens_salida: ts,
-      costo_usd: te * PRECIO_ENTRADA + ts * PRECIO_SALIDA, duracion_ms: Date.now() - inicio,
+      costo_usd: costo, duracion_ms: Date.now() - inicio,
     }).eq("id", consultaId);
     return json({ consulta_id: consultaId, hoja_markdown: hoja, fichas_citadas: citadas, tokens: { entrada: te, salida: ts } });
   } catch (e) {

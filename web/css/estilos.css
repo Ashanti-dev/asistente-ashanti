@@ -288,3 +288,18 @@ dialog .cerrar{position:sticky;top:0;float:right;margin:8px}
 .perfil .flecha{background:rgba(255,255,255,.18);border-radius:50%;width:44px;height:44px;display:grid;place-items:center;font-size:1.5rem}
 .perfil:focus-visible{box-shadow:0 0 0 3px #fff,0 0 0 6px var(--tinta)}
 @media(prefers-reduced-motion:reduce){.perfil:hover{transform:none}}
+
+/* ===== Pie de página ===== */
+footer.pie{border-top:none;margin-top:var(--s5);background:var(--papel-2);position:relative}
+footer.pie::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:var(--firma-h)}
+footer.pie .pie-in{max-width:var(--ancho);margin:0 auto;padding:var(--s4) var(--s2) var(--s3);display:grid;gap:var(--s3);color:var(--tinta-2);font-size:.92rem;line-height:1.5}
+@media(min-width:800px){footer.pie .pie-in{grid-template-columns:1.1fr 1fr 1fr;gap:var(--s4);padding:var(--s4) var(--s3) var(--s3)}}
+@media(min-width:1200px){footer.pie .pie-in{padding-left:0;padding-right:0}}
+.pie-marca img{height:44px;width:auto;display:block;margin-bottom:10px}
+.pie-marca p{margin:0}
+.pie-bloque h3{font-family:var(--display);font-size:1rem;font-weight:600;color:var(--tinta);margin:0 0 8px;letter-spacing:0}
+.pie-bloque p{margin:0 0 4px}
+.pie-aliados:empty{display:none}
+.pie-aliados{max-width:var(--ancho);margin:0 auto;padding:0 var(--s2) var(--s3);display:flex;flex-wrap:wrap;gap:var(--s3);align-items:center}
+.pie-aliados img{height:28px;width:auto;filter:grayscale(1);opacity:.75}
+.pie-legal{border-top:1px solid var(--linea);text-align:center;padding:14px var(--s2);font-size:.82rem;color:var(--gris)}
