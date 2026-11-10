@@ -6,8 +6,10 @@ window.HojaDocx = (function () {
   // Texto con **negritas** y citas [Ficha N, nombre]
   function runs(texto, base = {}) {
     const out = [];
-    const partes = texto.split(/(\*\*[^*]+\*\*|\[Ficha \d+[^\]]*\])/g).filter(Boolean);
+    const partes = texto.split(/(\*\*[^*]+\*\*|\[Ficha \d+[^\]]*\]|\[[^\]]+\]\(https?:\/\/[^)]+\))/g).filter(Boolean);
     for (const p of partes) {
+      const enlace = p.match(/^\[([^\]]+)\]\((https?:\/\/[^)]+)\)$/);
+      if (enlace) { out.push(new D.ExternalHyperlink({ link: enlace[2], children: [new D.TextRun({ text: enlace[1], style: "Hyperlink", font: FUENTE, size: 20, color: MORADO, underline: {} })] })); continue; }
       if (/^\*\*/.test(p)) out.push(new D.TextRun({ text: p.slice(2, -2), bold: true, font: FUENTE, size: 22, color: TINTA, ...base }));
       else if (/^\[Ficha/.test(p)) out.push(new D.TextRun({ text: p, font: FUENTE, size: 18, color: MORADO, smallCaps: true, ...base }));
       else out.push(new D.TextRun({ text: p, font: FUENTE, size: 22, color: TINTA, ...base }));

@@ -7,7 +7,10 @@
     "pais": "Portugal",
     "reconocimiento": "Innovation in Politics Awards 2025, categoría Democracia. Organización: European Capital of Democracy (ECoD); premio creado por The Innovation in Politics Institute. Entrega: 17 de septiembre de 2025, Viena. También documentado por la OCDE.",
     "eje_principal": "participacion_juvenil",
-    "ejes": ["participacion_juvenil", "fortalecimiento_democratico"],
+    "ejes": [
+      "participacion_juvenil",
+      "fortalecimiento_democratico"
+    ],
     "periodo": "Inicio: 2019, según la OCDE. Periodo documentado: desde su creación hasta la edición municipal de 2025. No se acredita una convocatoria en 2026.",
     "desafio_inicial": "Ampliar la intervención de las juventudes en las decisiones públicas y su conocimiento del presupuesto y de las competencias municipales.",
     "descripcion": "La municipalidad convoca propuestas juveniles, organiza su selección mediante votación y financia proyectos ganadores con un presupuesto definido. Edición 2025: 240.000 euros, con un máximo de 40.000 por proyecto (asignación de esa edición, no un costo de réplica en Perú). Temas 2025: artes y creatividad; bienestar y ambiente; capacitación y participación juvenil.",
@@ -26,6 +29,13 @@
       "[3] Municipalidad de Gaia (19/02/2025). Parque Multigeracional de Serzedo.",
       "[4] Municipalidad de Gaia. Reglamentos y normas de participación.",
       "[5] The Innovation in Politics Institute (18/09/2025). Ganadores de los Innovation in Politics Awards 2025; ceremonia del 17/09/2025."
+    ],
+    "fuentes_url": [
+      "https://www.oecd.org/en/publications/youth-at-the-centre-of-government-action_bcc2dd08-en/full-report/component-7.html",
+      "https://gopjovem.cm-gaia.pt/PageGen.aspx?WMCM_PaginaId=29267",
+      "https://gopjovem.cm-gaia.pt/PageGen.aspx?WMCM_PaginaId=29892&noticiaId=30413&pastaNoticiasReqId=29345",
+      "https://gopjovem.cm-gaia.pt/PageGen.aspx?WMCM_PaginaId=29011",
+      "https://innovationinpolitics.eu/2025/09/18/eight-outstanding-political-projects-win-the-innovation-in-politics-awards-2025-in-vienna/"
     ]
   },
   {
@@ -36,7 +46,10 @@
     "pais": "Colombia",
     "reconocimiento": "Ganadora de la 13.ª Distinción Buena Práctica en Participación Ciudadana, edición 2019. Entidad otorgante: Observatorio Internacional de la Democracia Participativa (OIDP). La comunicación del premio la vincula al ejercicio Nuevo Gobierno.",
     "eje_principal": "fortalecimiento_democratico",
-    "ejes": ["fortalecimiento_democratico", "participacion_ciudadana"],
+    "ejes": [
+      "fortalecimiento_democratico",
+      "participacion_ciudadana"
+    ],
     "periodo": "Documentada en la candidatura de 2019 y vinculada al Plan Participativo de Desarrollo Nariño 2016–2019. Las fuentes no acreditan su continuidad posterior.",
     "desafio_inicial": "Incorporar las prioridades de comunidades mayoritariamente rurales a las decisiones de inversión pública, en un territorio afectado por el conflicto y con dificultades de conectividad.",
     "descripcion": "La Gobernación desplaza su equipo al territorio y somete los proyectos a votación ciudadana. Una plataforma que funciona en red local permite votar sin conexión a internet. Priorización de inversión mediante voto; asignación territorial según población y necesidades básicas insatisfechas; información y rendición de cuentas valoradas por el jurado. Financiamiento departamental asociado a regalías.",
@@ -52,6 +65,10 @@
     "fuentes_verificacion": [
       "[1] Gobernación de Nariño (2019). Candidatura GANA Municipales ante el OIDP.",
       "[2] OIDP (2019). Nariño gana la 13.ª Distinción a la Buena Práctica en Participación Ciudadana."
+    ],
+    "fuentes_url": [
+      "https://participate.oidp.net/processes/award2019/f/104/proposals/703?locale=es",
+      "https://oidp.net/en/content.php?id=1656"
     ]
   },
   {
@@ -62,7 +79,10 @@
     "pais": "Perú",
     "reconocimiento": "Ganadora del concurso Buenas Prácticas Interculturales en Gestión Pública 2014, categoría Gobierno Local. Entidad otorgante: Ministerio de Cultura del Perú. Premiación comunicada el 11 de diciembre de 2014.",
     "eje_principal": "interculturalidad",
-    "ejes": ["interculturalidad", "participacion_ciudadana"],
+    "ejes": [
+      "interculturalidad",
+      "participacion_ciudadana"
+    ],
     "periodo": "Inicio: 2013. Experiencia premiada en 2014 y sistematizada por el Ministerio de Cultura en 2016. No se acredita su funcionamiento actual.",
     "desafio_inicial": "Adecuar la educación rural a las necesidades culturales de la niñez y mejorar sus aprendizajes.",
     "descripcion": "El municipio y la UGEL promovieron un modelo escolar construido con la comunidad, incorporando lengua quechua, saberes locales y participación familiar en las decisiones educativas. Transmisión intergeneracional, juegos tradicionales, uso de quechua y castellano, y adecuación de espacios escolares. La ficha publicada no consigna presupuesto desagregado.",
@@ -78,6 +98,10 @@
     "fuentes_verificacion": [
       "[1] Ministerio de Cultura (2016). Buenas Prácticas Interculturales en la Gestión Pública, experiencias 2014–2015, pp. 85–88.",
       "[2] Ministerio de Cultura (11/12/2014). Entrega de premios de Buenas Prácticas Interculturales en Gestión Pública."
+    ],
+    "fuentes_url": [
+      "https://centroderecursos.cultura.pe/sites/default/files/rb/pdf/Libro-BPI-2014-2015.pdf",
+      "https://www.gob.pe/institucion/cultura/noticias/46730-ministerio-de-cultura-entrega-premios-del-concurso-buenas-practicas-interculturales-en-gestion-publica-2014"
     ]
   },
   {
@@ -88,7 +112,9 @@
     "pais": "Perú",
     "reconocimiento": "Mención especial de la 8.ª Distinción Buena Práctica en Participación Ciudadana, edición 2014. Entidad otorgante: Observatorio Internacional de la Democracia Participativa (OIDP).",
     "eje_principal": "participacion_ciudadana",
-    "ejes": ["participacion_ciudadana"],
+    "ejes": [
+      "participacion_ciudadana"
+    ],
     "periodo": "Del 2 de enero de 2011 al 31 de diciembre de 2014, según la candidatura. Se presenta como experiencia histórica.",
     "desafio_inicial": "Mejorar ingresos y condiciones de vida rurales mediante inversión productiva, riego y organización de productores.",
     "descripcion": "El municipio articuló presupuesto participativo y planificación concertada en ejes social, productivo y de infraestructura; formuló proyectos y planes de negocio con comunidades. Organización asociativa, selección de actividades según condiciones territoriales, capacitación y articulación comercial. Convenios con SENASA, AGRORURAL, AGROIDEAS, Sierra Exportadora y Antamina. La documentación no desagrega el presupuesto total.",
@@ -104,6 +130,10 @@
     "fuentes_verificacion": [
       "[1] OIDP (2014). VIII Distinción Buena Práctica en Participación Ciudadana, ficha de Huachis, páginas 44–46 del PDF.",
       "[2] OIDP. La gestión pública en el fortalecimiento productivo y social, registro de Huachis."
+    ],
+    "fuentes_url": [
+      "https://www.oidp.net/docs/repo/doc15.pdf",
+      "https://oidp.net/es/practice.php?id=514"
     ]
   },
   {
@@ -114,7 +144,12 @@
     "pais": "Ecuador",
     "reconocimiento": "Ganadora de la 1.ª Distinción Buena Práctica en Participación Ciudadana, edición 2006. Entidad otorgante: Observatorio Internacional de la Democracia Participativa (OIDP).",
     "eje_principal": "participacion_ciudadana",
-    "ejes": ["participacion_ciudadana", "interculturalidad", "lucha_contra_discriminacion", "enfoque_genero"],
+    "ejes": [
+      "participacion_ciudadana",
+      "interculturalidad",
+      "lucha_contra_discriminacion",
+      "enfoque_genero"
+    ],
     "periodo": "Antecedentes: gestión participativa desde 1996 y elaboración participativa del presupuesto desde 2000. Metodología específica de inclusión de mujeres desde 2003; sistematización premiada en 2006. Se analiza ese periodo histórico.",
     "desafio_inicial": "Superar barreras de género, lengua y alfabetización que limitaban la voz de mujeres indígenas en decisiones locales.",
     "descripcion": "El municipio facilitó espacios propios de mujeres, priorización de propuestas y participación en el seguimiento del presupuesto. Lengua originaria, materiales visuales y cotidianos, reuniones autónomas de mujeres y devolución de prioridades al proceso cantonal. La fuente no ofrece un costo integral de operación.",
@@ -130,6 +165,10 @@
     "fuentes_verificacion": [
       "[1] Municipio de Cotacachi y OIDP (2006). Procesos y mecanismos de inclusión de las mujeres indígenas en la gestión local, páginas 1–9 del PDF.",
       "[2] Municipios Abiertos Ecuador (s. f.). Procesos y mecanismos de inclusión de las mujeres indígenas en la gestión local."
+    ],
+    "fuentes_url": [
+      "https://oidp.net/docs/Distincio_Bones_Practiques/I/pdf_publicacio_cotacachi.pdf",
+      "https://municipiosabiertos.gob.ec/buenas-practicas/procesos-y-mecanismos-de-inclusion-de-las-mujeres-indigenas-en-la-gestion-local/"
     ]
   },
   {
@@ -140,7 +179,12 @@
     "pais": "Guatemala",
     "reconocimiento": "Tercer Premio a las Buenas Prácticas Locales con Enfoque de Género, II edición, 2013. Entidad otorgante: Unión Iberoamericana de Municipalistas (UIM). Fallo: 30 de agosto; publicación: 2 de septiembre de 2013.",
     "eje_principal": "participacion_ciudadana",
-    "ejes": ["participacion_ciudadana", "interculturalidad", "fortalecimiento_democratico", "enfoque_genero"],
+    "ejes": [
+      "participacion_ciudadana",
+      "interculturalidad",
+      "fortalecimiento_democratico",
+      "enfoque_genero"
+    ],
     "periodo": "Escuela documentada y premiada en 2013, dentro del programa Ciudades Seguras desarrollado en Guatemala en 2008–2013. No se acredita el año exacto de inicio de la Escuela ni su continuidad hasta 2026.",
     "desafio_inicial": "Fortalecer la capacidad de las lideresas para organizarse e incidir frente a la violencia en ámbitos públicos y privados, en un territorio con población indígena y garífuna.",
     "descripcion": "Fundación Guatemala desarrolló formación en derechos de las mujeres, ciudades seguras y estrategias de incidencia. El jurado valoró la mejora de capacidades organizativas y de argumentación política. Es formación para la participación; no asignación de escaños étnicos. Las fuentes no precisan el costo total de la Escuela; para un piloto peruano se propone prever facilitación, local, materiales, movilidad, apoyos de cuidado y accesibilidad lingüística.",
@@ -157,6 +201,11 @@
       "[1] UIM (02/09/2013). Fallo de la II edición de los premios a las buenas prácticas locales con enfoque de género.",
       "[2] Fundación Guatemala (s. f.). Programa Ciudades Seguras y Escuela de Liderazgo de Mujeres.",
       "[3] Suárez Trueba y Bolaños Vargas (2013). Evaluación final del Programa Ciudades Seguras de ONU Mujeres Guatemala."
+    ],
+    "fuentes_url": [
+      "https://www.uimunicipalistas.org/actualidad/premios-a-las-buenas-practicas-locales-con-enfoque-de-genero/",
+      "https://fundaguatemala.blogspot.com/p/programa-ciudades-seguras-para-las.html",
+      "https://gate.unwomen.org/EvaluationDocument/Download?evaluationDocumentID=3661"
     ]
   },
   {
@@ -167,7 +216,10 @@
     "pais": "México",
     "reconocimiento": "Ganadora de la 19.ª Distinción Buena Práctica en Participación Ciudadana. Entidad otorgante: Observatorio Internacional de la Democracia Participativa (OIDP). Entrega: 21 de mayo de 2025, Córdoba, Argentina.",
     "eje_principal": "fortalecimiento_democratico",
-    "ejes": ["fortalecimiento_democratico", "participacion_ciudadana"],
+    "ejes": [
+      "fortalecimiento_democratico",
+      "participacion_ciudadana"
+    ],
     "periodo": "Diseño en 2021 e implementación desde enero de 2022. La candidatura de 2025 la registra en vigor, vinculada a los planes municipales 2021–2024 y 2024–2027.",
     "desafio_inicial": "Atender la desconexión entre ciudadanía y gobierno y las desigualdades de acceso a servicios.",
     "descripcion": "El ayuntamiento organizó representación por demarcaciones, eligió juntas ciudadanas y las vinculó con diagnóstico, priorización y seguimiento de acciones municipales. Representación territorial, formación de integrantes, diálogo con el gobierno y combinación de actividades presenciales y canales digitales. La ficha registra $983.927,70 sin aclarar moneda ni periodo, por lo que no se usa como costo comparable.",
@@ -183,6 +235,10 @@
     "fuentes_verificacion": [
       "[1] OIDP (2025). San Luis Potosí gana la 19.ª Distinción por Construyendo Ciudadanía.",
       "[2] Ayuntamiento de San Luis Potosí (2025). Candidatura Construyendo Ciudadanía ante el OIDP."
+    ],
+    "fuentes_url": [
+      "https://www.oidp.net/es/content.php?id=1978",
+      "https://oidp.net/award/es/19/record.php?t=feba3cdb359d9318b8cc9c9717c3bc1c42945c67935c91f96b491adf4a9e"
     ]
   },
   {
@@ -193,7 +249,10 @@
     "pais": "Brasil",
     "reconocimiento": "Premio Construir Igualdad, edición 2020; categoría Áreas Urbanas de hasta un millón de habitantes. Entidad otorgante: Centro Internacional para la Promoción de los Derechos Humanos (CIPDH-UNESCO), con apoyo de UNESCO Montevideo. Entrega: 7 de enero de 2021, ceremonia virtual.",
     "eje_principal": "lucha_contra_discriminacion",
-    "ejes": ["lucha_contra_discriminacion", "enfoque_genero"],
+    "ejes": [
+      "lucha_contra_discriminacion",
+      "enfoque_genero"
+    ],
     "periodo": "Inicio: 2013. Reconocimiento: edición 2020 del premio, entregada el 7 de enero de 2021. Documentación institucional consultada: 2019–2021; no acredita continuidad operativa hasta 2026.",
     "desafio_inicial": "Responder a la violencia contra mujeres y niñas y sus consecuencias, promoviendo la igualdad de género.",
     "descripcion": "El gobierno local ofrece un espacio de orientación, acogida y acompañamiento interdisciplinario a mujeres en situación de violencia, junto con acciones preventivas (charlas, cursos y talleres). Atención integral; apoyo a la autonomía emocional y económica; enfoque interseccional reconocido por el jurado. Las fuentes no desagregan presupuesto ni dotación de personal.",
@@ -211,6 +270,12 @@
       "[2] CIPDH (s. f.). Premio Construir Igualdad 2020 y descripción del CEAM.",
       "[3] Confederação Nacional de Municípios (2021). Centro Especializado de Atendimento à Mulher Brasilete Ramos Caiado, Goiás GO.",
       "[4] Confederação Nacional de Municípios (2019). Visita al CEAM de Goiás; inicio en 2013 y acompañamiento interdisciplinario."
+    ],
+    "fuentes_url": [
+      "https://www.unesco.org/es/articles/ciudad-de-mexico-y-goias-las-ganadoras-del-premio-construir-igualdad-2020",
+      "https://www.cipdh.gob.ar/entregamos-premios-construir-igualdad-2020/",
+      "https://cnm.org.br/biblioteca/exibe/4281",
+      "https://cnm.org.br/comunicacao/noticias/equipe-da-cnm-conhece-projeto-que-combate-violencia-contra-a-mulher-em-goias-go"
     ]
   }
 ]

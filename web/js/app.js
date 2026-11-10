@@ -31,7 +31,7 @@
     $('#r-perfil').textContent = n; $('#g-perfil').textContent = n;
     const esAut = estado.perfil === 'autoridades';
     $('#l-institucion').textContent = esAut ? 'Municipalidad' : 'Organización';
-    $('#a-institucion').textContent = esAut ? 'Nombre de la municipalidad en la que trabaja.' : 'Nombre de su organización o colectivo. Si no pertenece a ninguna, escriba "independiente".';
+    $('#a-institucion').textContent = esAut ? 'Nombre de la municipalidad donde trabaja.' : 'Nombre de su organización o colectivo. Si no pertenece a ninguna, escriba "independiente".';
     pintarPreguntas();
     mostrar('registro');
   }));
@@ -109,6 +109,7 @@
     html = html.replace(/<\/h1>\s*<p>/, '</h1><p class="meta">');
     html = html.replace(/<p>(Esta hoja se basa únicamente[^<]*)<\/p>\s*$/, '<p class="nota">$1</p>');
     $('#hoja').innerHTML = html;
+    $('#hoja').querySelectorAll('a[href^="http"]').forEach(a => { a.target = '_blank'; a.rel = 'noopener'; });
     const av = $('#aviso-hoja');
     if (r.modo === 'prueba') { av.textContent = 'Modo de prueba: esta es una hoja de ejemplo. Cuando la herramienta esté conectada, la hoja se redacta a partir de su consulta.'; av.classList.remove('oculto'); }
     else av.classList.add('oculto');
@@ -120,7 +121,7 @@
     finally { b.disabled = false; b.textContent = 'Descargar en Word'; }
   });
   $('#b-copiar').addEventListener('click', async () => {
-    const texto = estado.hoja.replace(/^#+\s*/gm, '').replace(/\*\*/g, '');
+    const texto = estado.hoja.replace(/^#+\s*/gm, '').replace(/\*\*/g, '').replace(/\[([^\]]+)\]\((https?:[^)]+)\)/g, '$2');
     try { await navigator.clipboard.writeText(texto); $('#b-copiar').textContent = 'Texto copiado'; setTimeout(() => $('#b-copiar').textContent = 'Copiar el texto', 2000); API.marcarDescarga(estado.consulta_id, 'copia'); }
     catch (e) { window.prompt('Copie el texto:', texto); }
   });

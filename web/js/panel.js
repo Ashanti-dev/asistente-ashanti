@@ -3,8 +3,8 @@
   const cfg = window.CONFIG || {};
   const real = !!(cfg.SUPABASE_URL && cfg.SUPABASE_ANON_KEY && window.supabase);
   const sb = real ? window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY) : null;
-  const PERFIL = { autoridades: 'Autoridades y funcionarios municipales', sociedad_civil: 'Sociedad civil' };
-  const fichas = await (await fetch('data/fichas.json')).json();
+  const PERFIL = { autoridades: 'Autoridades y personal municipal', sociedad_civil: 'Sociedad civil' };
+  let fichas = await (await fetch('data/fichas.json')).json();
   const ejes = await (await fetch('data/ejes.json')).json();
   const nombreEje = id => (ejes.find(e => e.id === id) || {}).nombre || id;
   const fecha = s => s ? new Date(s).toLocaleString('es-PE', { dateStyle: 'short', timeStyle: 'short' }) : '';
@@ -33,7 +33,7 @@
       { id: 102, creado: personas[1].creado, persona: personas[1], perfil: 'sociedad_civil', temas: ['lucha_contra_discriminacion', 'enfoque_genero'], poblacion: 'Mujeres jóvenes afroperuanas', logro: 'Atención sin discriminación y derivación correcta', prioridades: 'Gerencia de Desarrollo Social', condiciones: '15 integrantes, sin presupuesto', texto_propio: 'Queremos llevar una propuesta concreta.', fichas_citadas: [8, 5, 6], hoja_markdown: null, tokens_entrada: 13020, tokens_salida: 2590, costo_usd: 0.08 },
       { id: 103, creado: personas[2].creado, persona: personas[2], perfil: 'autoridades', temas: ['participacion_ciudadana'], poblacion: 'Juntas vecinales', logro: 'Reactivar las juntas', prioridades: 'Seguridad y limpieza', condiciones: 'Sin presupuesto adicional', texto_propio: '', fichas_citadas: [7, 4], hoja_markdown: null, tokens_entrada: 10110, tokens_salida: 1980, costo_usd: 0.06 }
     ];
-    return { personas, consultas, descargas: [{ consulta_id: 101, tipo: 'word' }, { consulta_id: 102, tipo: 'word' }, { consulta_id: 102, tipo: 'copia' }], documentos: [], configuracion: [{ clave: 'limite_diario_por_persona', valor: 10 }, { clave: 'limite_diario_total', valor: 200 }] };
+    return { personas, consultas, descargas: [{ consulta_id: 101, tipo: 'word' }, { consulta_id: 102, tipo: 'word' }, { consulta_id: 102, tipo: 'copia' }], documentos: [], configuracion: [{ clave: 'presupuesto_mensual_usd', valor: 20 }, { clave: 'limite_mensual_total', valor: 450 }, { clave: 'tipo_cambio', valor: 3.418 }] };
   }
 
   // ---- Sesión ----
@@ -146,48 +146,159 @@
     const colsU = [{ t: 'Fecha de registro', v: p => fecha(p.creado) }, { t: 'Nombres y apellidos', v: p => p.nombres }, { t: 'Correo', v: p => p.correo }, { t: 'Perfil', v: p => PERFIL[p.perfil] }, { t: 'Municipalidad u organización', v: p => p.institucion }, { t: 'Cargo o rol', v: p => p.cargo }, { t: 'Departamento', v: p => p.departamento }, { t: 'Consentimiento', v: p => fecha(p.consentimiento_fecha) }];
     $('#t-usuarios').innerHTML = tabla(colsU, d.personas, 'Usuarios');
 
-    // Contenido
-    const colsF = [{ t: 'N.°', v: f => f.numero }, { t: 'Nombre de la acción', v: f => f.nombre_accion, recorte: true }, { t: 'Lugar', v: f => f.lugar, recorte: true }, { t: 'Ejes temáticos', v: f => f.ejes.map(nombreEje).join('; '), recorte: true }, { t: 'Reconocimiento', v: f => f.reconocimiento, recorte: true }, { t: 'Fuentes', v: f => f.fuentes_verificacion.length }];
-    $('#t-contenido').innerHTML = `<p class="aviso">Las 8 fichas de buenas prácticas de la Caja de Herramientas. La carga de fichas y documentos nuevos desde este panel entra con el Producto 3.</p>` + tabla(colsF, fichas, 'Fichas') +
-      `<h2>Documentos de contexto</h2>` + tabla([{ t: 'Documento', v: x => x.nombre }, { t: 'Eje', v: x => nombreEje(x.eje) }, { t: 'Fecha de carga', v: x => fecha(x.creado) }], d.documentos, 'Documentos');
+    // ===== Contenido: fichas y documentos de contexto =====
+    if (real) { const rf = await sb.from('fichas').select('*').order('numero'); if (!rf.error) fichas = rf.data; }
+    else fichas = fichas.map(f => ({ activa: true, ...f }));
+    const esc = t => String(t ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const CAMPOS = [['nombre_accion', 'Nombre de la acción'], ['lugar', 'Lugar'], ['reconocimiento', 'Reconocimiento'], ['periodo', 'Periodo'], ['desafio_inicial', 'Desafío inicial'], ['descripcion', 'Descripción de la intervención'], ['poblacion', 'Población destinataria'], ['resultados_alcanzados', 'Resultados alcanzados'], ['factores_exito', 'Factores de éxito'], ['dificultades', 'Dificultades'], ['aprendizajes', 'Aprendizajes'], ['elementos_adaptables', 'Elementos adaptables'], ['condiciones_adaptacion', 'Condiciones de adaptación'], ['accion_sugerida', 'Acción sugerida'], ['instrumentos', 'Instrumentos y fuentes de verificación']];
+    function verFicha(f) {
+      const fuentes = (f.fuentes_verificacion || []).map((t, i) => `<li>${esc(t)}${f.fuentes_url?.[i] ? ` <a href="${esc(f.fuentes_url[i])}" target="_blank" rel="noopener">Ver fuente</a>` : ''}</li>`).join('');
+      $('#dlg-hoja').innerHTML = `<h1>Ficha ${f.numero}. ${esc(f.nombre_corto)}</h1><p class="meta">${esc(f.pais || '')} · ${(f.ejes || []).map(nombreEje).join('; ')} · ${f.activa === false ? 'Inactiva' : 'Activa'}</p>` +
+        CAMPOS.map(([k, t]) => f[k] ? `<h2>${t}</h2><p>${esc(f[k])}</p>` : '').join('') + `<h2>Fuentes de verificación</h2><ul>${fuentes}</ul>`;
+      dlg.showModal();
+    }
+    function pintarContenido() {
+      const filas = fichas.map(f => `<tr><td>${f.numero}</td><td>${esc(f.nombre_corto)}</td><td>${esc(f.pais || '')}</td><td>${(f.ejes || []).map(nombreEje).join('; ')}</td>
+        <td><label class="interruptor"><input type="checkbox" data-activa="${f.numero}" ${f.activa === false ? '' : 'checked'}><span>${f.activa === false ? 'Inactiva' : 'Activa'}</span></label></td>
+        <td><button class="ver" data-ficha="${f.numero}">Ver ficha</button></td></tr>`).join('');
+      $('#t-contenido').innerHTML = `
+        <div class="barra-tabla"><h2 style="margin:0">Fichas de buenas prácticas</h2><button class="boton" id="b-nueva-ficha">Agregar ficha</button></div>
+        <p class="ayuda-panel">Las fichas activas son las que usa el asistente. Una ficha inactiva deja de usarse en las consultas nuevas, pero no se borra.</p>
+        <div class="tabla-wrap"><table><thead><tr><th>N.°</th><th>Ficha</th><th>País</th><th>Ejes temáticos</th><th>Estado</th><th></th></tr></thead><tbody>${filas}</tbody></table></div>
+        <div id="form-ficha" class="oculto"></div>
+        <div class="barra-tabla" style="margin-top:40px"><h2 style="margin:0">Documentos de contexto</h2><button class="boton" id="b-nuevo-doc">Agregar documento</button></div>
+        <p class="ayuda-panel">Textos de apoyo por eje temático (por ejemplo, las preguntas seleccionadas de los manuales). El asistente los lee en cada consulta del eje, por lo que cada documento aumenta el costo por consulta.</p>
+        <div id="form-doc" class="oculto"></div>
+        <div class="tabla-wrap"><table><thead><tr><th>Documento</th><th>Eje</th><th>Palabras</th><th>Fecha de carga</th><th>Estado</th><th></th></tr></thead><tbody>${d.documentos.map(x => `<tr><td>${esc(x.nombre)}</td><td>${nombreEje(x.eje)}</td><td>${(x.contenido || '').split(/\s+/).filter(Boolean).length}</td><td>${fecha(x.creado)}</td>
+          <td><label class="interruptor"><input type="checkbox" data-doc-activo="${x.id}" ${x.activo === false ? '' : 'checked'}><span>${x.activo === false ? 'Inactivo' : 'Activo'}</span></label></td>
+          <td><button class="ver" data-doc="${x.id}">Ver</button> · <button class="ver" data-doc-borrar="${x.id}">Eliminar</button></td></tr>`).join('') || '<tr><td colspan="6">Todavía no hay documentos de contexto.</td></tr>'}</tbody></table></div>`;
+    }
+    pintarContenido();
+    $('#t-contenido').addEventListener('click', async e => {
+      const t = e.target;
+      if (t.dataset.ficha) return verFicha(fichas.find(f => String(f.numero) === t.dataset.ficha));
+      if (t.dataset.doc) { const x = d.documentos.find(y => y.id === t.dataset.doc); $('#dlg-hoja').innerHTML = `<h1>${esc(x.nombre)}</h1><p class="meta">${nombreEje(x.eje)}</p><p style="white-space:pre-wrap">${esc(x.contenido)}</p>`; return dlg.showModal(); }
+      if (t.dataset.docBorrar) {
+        if (!confirm('¿Eliminar este documento de contexto? No se puede deshacer.')) return;
+        if (real) { const r = await sb.from('documentos_contexto').delete().eq('id', t.dataset.docBorrar); if (r.error) return alert('No se pudo eliminar.'); }
+        d.documentos = d.documentos.filter(y => y.id !== t.dataset.docBorrar); return pintarContenido();
+      }
+      if (t.id === 'b-nueva-ficha') {
+        const f = $('#form-ficha'); f.classList.toggle('oculto');
+        f.innerHTML = `<div class="kpi conf"><h3>Nueva ficha</h3><p class="ayuda">Los campos son los de la sistematización. El asistente la usará desde la siguiente consulta.</p>
+          <div class="campo"><label>Nombre corto (como se citará)</label><input type="text" id="nf-nombre_corto" placeholder="Por ejemplo: Presupuesto participativo juvenil en Huanta"></div>
+          <div class="campo"><label>País</label><input type="text" id="nf-pais"></div>
+          <div class="campo"><span class="etiqueta">Ejes temáticos</span><div class="casillas">${ejes.map(x => `<label class="casilla"><input type="checkbox" name="nf-eje" value="${x.id}"><span>${x.nombre}</span></label>`).join('')}</div></div>
+          ${CAMPOS.map(([k, t]) => `<div class="campo"><label>${t}</label><textarea id="nf-${k}" rows="3"></textarea></div>`).join('')}
+          <div class="campo"><label>Fuentes de verificación (una por línea; puede añadir el enlace al final de cada línea)</label><textarea id="nf-fuentes" rows="4"></textarea></div>
+          <button class="boton" id="b-guardar-ficha">Guardar ficha</button> <span id="nf-estado" class="ayuda"></span></div>`;
+        return;
+      }
+      if (t.id === 'b-guardar-ficha') {
+        const v = k => $('#nf-' + k).value.trim();
+        const ejesSel = [...document.querySelectorAll('input[name=nf-eje]:checked')].map(i => i.value);
+        if (!v('nombre_corto') || !v('nombre_accion') || !ejesSel.length) { $('#nf-estado').textContent = 'Complete al menos el nombre corto, el nombre de la acción y un eje.'; return; }
+        const lineas = v('fuentes').split('\n').map(x => x.trim()).filter(Boolean);
+        const nueva = { numero: Math.max(0, ...fichas.map(f => f.numero)) + 1, nombre_corto: v('nombre_corto'), pais: v('pais'), ejes: ejesSel, eje_principal: ejesSel[0], activa: true,
+          fuentes_verificacion: lineas.map(l => l.replace(/\s*https?:\/\/\S+$/, '')), fuentes_url: lineas.map(l => (l.match(/https?:\/\/\S+$/) || [''])[0]) };
+        CAMPOS.forEach(([k]) => nueva[k] = v(k) || 'No consigna información.');
+        if (real) { const r = await sb.from('fichas').insert(nueva); if (r.error) { $('#nf-estado').textContent = 'No se pudo guardar: ' + r.error.message; return; } }
+        fichas.push(nueva); pintarContenido(); return;
+      }
+      if (t.id === 'b-nuevo-doc') {
+        const f = $('#form-doc'); f.classList.toggle('oculto');
+        f.innerHTML = `<div class="kpi conf"><h3>Nuevo documento de contexto</h3>
+          <div class="campo"><label>Nombre del documento</label><input type="text" id="nd-nombre" placeholder="Por ejemplo: Manual de género, preguntas seleccionadas"></div>
+          <div class="campo"><label>Eje temático</label><select id="nd-eje">${ejes.map(x => `<option value="${x.id}">${x.nombre}</option>`).join('')}</select></div>
+          <div class="campo"><label>Cargar desde un archivo Word (.docx) o de texto (.txt)</label><input type="file" id="nd-archivo" accept=".docx,.txt"></div>
+          <div class="campo"><label>Contenido</label><textarea id="nd-contenido" rows="10" placeholder="Pegue aquí el texto, o cárguelo desde un archivo."></textarea><div class="contador" id="nd-palabras">0 palabras</div></div>
+          <button class="boton" id="b-guardar-doc">Guardar documento</button> <span id="nd-estado" class="ayuda"></span></div>`;
+        const cuenta = () => $('#nd-palabras').textContent = $('#nd-contenido').value.split(/\s+/).filter(Boolean).length.toLocaleString('es-PE') + ' palabras (unos US$ ' + ($('#nd-contenido').value.split(/\s+/).filter(Boolean).length * 1.4 * 3 / 1e6).toFixed(4).replace('.', ',') + ' más por consulta del eje)';
+        $('#nd-contenido').addEventListener('input', cuenta);
+        $('#nd-archivo').addEventListener('change', async ev => {
+          const file = ev.target.files[0]; if (!file) return;
+          if (/\.txt$/i.test(file.name)) $('#nd-contenido').value = await file.text();
+          else { const r = await mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() }); $('#nd-contenido').value = r.value.trim(); }
+          if (!$('#nd-nombre').value) $('#nd-nombre').value = file.name.replace(/\.(docx|txt)$/i, '');
+          cuenta();
+        });
+        return;
+      }
+      if (t.id === 'b-guardar-doc') {
+        const nuevo = { nombre: $('#nd-nombre').value.trim(), eje: $('#nd-eje').value, contenido: $('#nd-contenido').value.trim(), activo: true };
+        if (!nuevo.nombre || !nuevo.contenido) { $('#nd-estado').textContent = 'Complete el nombre y el contenido.'; return; }
+        if (real) { const r = await sb.from('documentos_contexto').insert(nuevo).select().single(); if (r.error) { $('#nd-estado').textContent = 'No se pudo guardar: ' + r.error.message; return; } d.documentos.push(r.data); }
+        else d.documentos.push({ ...nuevo, id: 'p' + Date.now(), creado: new Date().toISOString() });
+        pintarContenido(); return;
+      }
+    });
+    $('#t-contenido').addEventListener('change', async e => {
+      const t = e.target;
+      if (t.dataset.activa) {
+        const f = fichas.find(x => String(x.numero) === t.dataset.activa); f.activa = t.checked;
+        if (real) { const r = await sb.from('fichas').update({ activa: t.checked }).eq('numero', f.numero); if (r.error) { alert('No se pudo cambiar el estado.'); f.activa = !t.checked; } }
+        pintarContenido();
+      }
+      if (t.dataset.docActivo) {
+        const x = d.documentos.find(y => y.id === t.dataset.docActivo); x.activo = t.checked;
+        if (real) await sb.from('documentos_contexto').update({ activo: t.checked }).eq('id', x.id);
+        pintarContenido();
+      }
+    });
 
-    // Configuración y simulador de gasto
+    // ===== Configuración: presupuesto y límite mensual =====
     const valor = k => Number((d.configuracion.find(x => x.clave === k) || {}).valor ?? 0);
-    const costoMedio = d.consultas.filter(c => +c.costo_usd > 0).length ? d.consultas.reduce((a, c) => a + (+c.costo_usd || 0), 0) / d.consultas.filter(c => +c.costo_usd > 0).length : 0.05;
+    const conCosto = d.consultas.filter(c => +c.costo_usd > 0);
+    const costoMedio = conCosto.length ? conCosto.reduce((a, c) => a + +c.costo_usd, 0) / conCosto.length : 0.045;
+    const inicioMes = new Date(); inicioMes.setDate(1); inicioMes.setHours(0, 0, 0, 0);
+    const delMes = d.consultas.filter(c => new Date(c.creado) >= inicioMes && c.hoja_markdown !== undefined);
+    const gastoMes = delMes.reduce((a, c) => a + (+c.costo_usd || 0), 0);
+    const usd = n => 'US$ ' + n.toFixed(2).replace('.', ',');
+    const sol = n => 'S/ ' + n.toFixed(2).replace('.', ',');
+    const fmtMil = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    const presupuesto = valor('presupuesto_mensual_usd') || 20, limite = valor('limite_mensual_total') || 400;
+    const tcInicial = valor('tipo_cambio') || 3.418;
     $('#t-configuracion').innerHTML = `
+      <div class="kpis">
+        <div class="kpi"><b>${usd(costoMedio).replace('US$ ', 'US$ ')}</b><span>Costo promedio por consulta${conCosto.length ? ' (real, ' + conCosto.length + ' consultas)' : ' (estimado)'}</span></div>
+        <div class="kpi"><b>${Math.floor(presupuesto / costoMedio)}</b><span>Consultas al mes que alcanzan con ${usd(presupuesto)}</span></div>
+        <div class="kpi"><b>${delMes.length} de ${limite}</b><span>Consultas usadas este mes</span></div>
+        <div class="kpi"><b>${usd(gastoMes)}</b><span>Gasto en la API este mes</span></div>
+      </div>
       <div class="dos">
         <div class="kpi conf">
-          <h3>Límites de consultas</h3>
-          <p class="ayuda">Protegen el saldo de la API. Los cambios rigen desde la siguiente consulta.</p>
-          <div class="campo"><label for="c-persona">Consultas por persona al día</label><input type="number" min="1" max="100" id="c-persona" value="${valor('limite_diario_por_persona')}"></div>
-          <div class="campo"><label for="c-total">Consultas totales al día (toda la herramienta)</label><input type="number" min="1" max="5000" id="c-total" value="${valor('limite_diario_total')}"></div>
-          <button class="boton" id="c-guardar">Guardar límites</button>
+          <h3>Presupuesto y límite del mes</h3>
+          <p class="ayuda">Cuando se llega al límite, la herramienta deja de generar hojas hasta el primer día del mes siguiente. Así el gasto nunca pasa del presupuesto. El botón Guardar también guarda el tipo de cambio.</p>
+          <div class="campo"><label for="c-presupuesto">Presupuesto mensual para la API (US$)</label><input type="number" min="1" step="1" id="c-presupuesto" value="${presupuesto}"></div>
+          <div class="campo"><label for="c-limite">Límite de consultas al mes</label><input type="number" min="1" id="c-limite" value="${limite}"><p class="ayuda" id="c-sugerido"></p></div>
+          <button class="boton" id="c-guardar">Guardar</button>
           <p class="ayuda" id="c-estado"></p>
         </div>
         <div class="kpi conf simulador">
           <h3>¿Cuánto cuesta al mes?</h3>
-          <p class="ayuda">Calcule el gasto según cuántas consultas espera. El costo por consulta sale ${d.consultas.length ? 'del promedio real de la herramienta' : 'del estimado del plan de trabajo, hasta que haya consultas reales'}.</p>
-          <div class="campo"><label for="s-dia">Consultas al día</label><input type="number" min="0" id="s-dia" value="20"></div>
-          <div class="campo"><label for="s-costo">Costo por consulta (US$)</label><input type="number" min="0" step="0.001" id="s-costo" value="${costoMedio.toFixed(3)}"></div>
-          <div class="campo"><label for="s-tc">Tipo de cambio (S/ por US$)</label><input type="number" min="0" step="0.01" id="s-tc" value="3.75"></div>
-          <div class="resultado"><span>Consumo de la API al mes</span><b id="s-api">–</b><span>Supabase, plan de pago</span><b>US$ 25,00</b><span>Total estimado al mes</span><b id="s-total">–</b></div>
-          <p class="ayuda">El consumo de la API se paga por adelantado en la consola de Anthropic. Si el saldo se acaba, la herramienta deja de generar hojas hasta recargar.</p>
+          <p class="ayuda">Calculado con el costo promedio por consulta (${usd(costoMedio)}). Escriba el tipo de cambio del día y la tabla se recalcula.</p>
+          <div class="campo"><label for="s-tc">Tipo de cambio (soles por dólar)</label><input type="number" min="0" step="0.001" id="s-tc" value="${tcInicial}"></div>
+          <div class="tabla-wrap"><table><thead><tr><th>Consultas al mes</th><th>Costo en dólares</th><th>Costo en soles</th></tr></thead><tbody id="s-tabla"></tbody></table></div>
+          <div class="campo" style="margin-top:16px"><label for="s-mes">Otra cantidad de consultas al mes</label><input type="number" min="0" id="s-mes" value="100"></div>
+          <div class="resultado"><span>Costo estimado al mes</span><b id="s-total">–</b></div>
         </div>
       </div>`;
-    const fmt = (n, m) => { const [e, d] = n.toFixed(2).split('.'); return m + ' ' + e.replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ',' + d; };
-    function simular() {
-      const dia = +$('#s-dia').value || 0, costo = +$('#s-costo').value || 0, tc = +$('#s-tc').value || 0;
-      const api = dia * 30 * costo, total = api + 25;
-      $('#s-api').textContent = fmt(api, 'US$') + ' (' + fmt(api * tc, 'S/') + ')';
-      $('#s-total').textContent = fmt(total, 'US$') + ' (' + fmt(total * tc, 'S/') + ')';
-    }
-    ['#s-dia', '#s-costo', '#s-tc'].forEach(x => $(x).addEventListener('input', simular)); simular();
+    const sugerir = () => { const p = +$('#c-presupuesto').value || 0; $('#c-sugerido').textContent = `Con ${usd(p)} alcanzan unas ${Math.floor(p / costoMedio)} consultas al mes. Se sugiere un límite un poco menor, por ejemplo ${Math.floor(p / costoMedio * 0.9)}.`; };
+    $('#c-presupuesto').addEventListener('input', sugerir); sugerir();
+    const simular = () => {
+      const tc = +$('#s-tc').value || 0, n = +$('#s-mes').value || 0;
+      $('#s-tabla').innerHTML = [50, 100, 200, 300, 400, 500].map(k => `<tr><td>${k}</td><td>${usd(k * costoMedio)}</td><td>${sol(k * costoMedio * tc)}</td></tr>`).join('');
+      $('#s-total').textContent = usd(n * costoMedio) + ' (' + sol(n * costoMedio * tc) + ')';
+    };
+    ['#s-mes', '#s-tc'].forEach(x => $(x).addEventListener('input', simular)); simular();
     $('#c-guardar').addEventListener('click', async () => {
-      const per = Math.max(1, +$('#c-persona').value || 1), tot = Math.max(1, +$('#c-total').value || 1);
+      const p = Math.max(1, +$('#c-presupuesto').value || 1), l = Math.max(1, +$('#c-limite').value || 1);
       if (!real) { $('#c-estado').textContent = 'Modo de prueba: no se guarda.'; return; }
-      const r1 = await sb.from('configuracion').update({ valor: per, actualizado: new Date().toISOString() }).eq('clave', 'limite_diario_por_persona');
-      const r2 = await sb.from('configuracion').update({ valor: tot, actualizado: new Date().toISOString() }).eq('clave', 'limite_diario_total');
+      const r1 = await sb.from('configuracion').update({ valor: p, actualizado: new Date().toISOString() }).eq('clave', 'presupuesto_mensual_usd');
+      const r2 = await sb.from('configuracion').update({ valor: l, actualizado: new Date().toISOString() }).eq('clave', 'limite_mensual_total');
+      const tc = +$('#s-tc').value; if (tc > 0) await sb.from('configuracion').update({ valor: tc, actualizado: new Date().toISOString() }).eq('clave', 'tipo_cambio');
       $('#c-estado').textContent = (r1.error || r2.error) ? 'No se pudo guardar. Revise su conexión.' : 'Guardado. Rige desde la siguiente consulta.';
-    });  }
+    });
+  }
   arrancar();
 })();
