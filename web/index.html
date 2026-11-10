@@ -19,7 +19,8 @@
 <main id="app">
 
   <!-- Pantalla 1: perfil -->
-  <section id="v-perfil" data-vista>
+  <section id="v-perfil" data-vista class="inicio">
+    <div class="texto">
     <span class="antetitulo">Caja de Herramientas para Municipios · Municipios que Incluyen</span>
     <h1>Asistente Inteligente para la Innovación Pública Local</h1>
     <p class="guia">Una herramienta de Ashanti Perú para que autoridades, funcionarios municipales y sociedad civil conviertan ocho buenas prácticas municipales de inclusión en recomendaciones para su propio territorio.</p>
@@ -37,6 +38,7 @@
       <li><span><b>Responda el formulario guía:</b> cinco preguntas sobre su tema, su población, lo que quiere lograr, sus prioridades y sus condiciones.</span></li>
       <li><span><b>Reciba su hoja de recomendaciones</b> en menos de un minuto, para descargar en Word o copiar.</span></li>
     </ol>
+    </div>
 
     <div class="elegir" id="elegir">
       <h2>Elija su perfil para empezar</h2>
@@ -48,7 +50,7 @@
   </section>
 
   <!-- Pantalla 2: registro -->
-  <section id="v-registro" data-vista class="oculto">
+  <section id="v-registro" data-vista class="oculto lectura">
     <a href="#perfil" class="volver">← Cambiar de perfil</a>
     <div class="pasos"><span class="hecho"></span><span></span><span></span></div>
     <span class="antetitulo" id="r-perfil"></span>
@@ -66,7 +68,7 @@
   </section>
 
   <!-- Pantalla 3: formulario guía -->
-  <section id="v-formulario" data-vista class="oculto">
+  <section id="v-formulario" data-vista class="oculto lectura">
     <a href="#registro" class="volver">← Volver</a>
     <div class="pasos"><span class="hecho"></span><span class="hecho"></span><span></span></div>
     <span class="antetitulo" id="g-perfil"></span>
@@ -84,7 +86,7 @@
   </section>
 
   <!-- Pantalla 4: espera -->
-  <section id="v-espera" data-vista class="oculto">
+  <section id="v-espera" data-vista class="oculto lectura">
     <div class="pasos"><span class="hecho"></span><span class="hecho"></span><span class="hecho"></span></div>
     <h1>Preparando su hoja de recomendaciones</h1>
     <p class="guia">Tarda entre 15 y 40 segundos. No cierre esta página.</p>
@@ -101,7 +103,7 @@
   </section>
 
   <!-- Pantalla 5: hoja -->
-  <section id="v-hoja" data-vista class="oculto">
+  <section id="v-hoja" data-vista class="oculto lectura">
     <div class="pasos"><span class="hecho"></span><span class="hecho"></span><span class="hecho"></span></div>
     <span class="antetitulo">Paso 3 de 3</span>
     <h1>Su hoja está lista</h1>
