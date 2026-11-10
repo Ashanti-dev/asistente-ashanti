@@ -194,3 +194,39 @@ dialog .cerrar{position:sticky;top:0;float:right;margin:8px}
 .grafica .cab button{font:inherit;font-size:13px;background:none;border:1px solid var(--linea);border-radius:4px;padding:4px 10px;cursor:pointer;color:var(--tinta-2)}
 .grafica .lienzo{width:100%}
 .previsual{display:inline-block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--gris);border:1px solid var(--linea);border-radius:3px;padding:2px 8px;margin-left:8px;vertical-align:middle}
+
+/* ===== Portada (v3): todo en la primera vista ===== */
+.portada{display:grid;gap:var(--s3)}
+.portada h1{font-size:2rem;margin-bottom:12px}
+.portada .bajada{font-size:1.05rem;color:var(--tinta-2);margin:0}
+.portada .antetitulo{margin-bottom:10px}
+.portada-accion h2{color:var(--tinta);font-size:1.3rem;margin:0 0 12px}
+.portada .perfiles{margin-top:0;gap:12px}
+.portada .perfil{min-height:72px;padding:16px 20px}
+.portada .perfil strong{font-size:1.25rem}
+.portada .perfil small{font-size:.9rem}
+.claves{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.claves li{display:grid;gap:2px;padding-left:14px;border-left:3px solid;border-image:var(--firma) 1}
+.claves b{font-family:var(--display);font-weight:600;font-size:1.05rem}
+.claves span{color:var(--tinta-2);font-size:.98rem;line-height:1.45}
+.pasos-mini{list-style:none;counter-reset:p;margin:16px 0 0;padding:0;display:grid;gap:6px;font-size:.95rem;color:var(--tinta-2)}
+.pasos-mini li{counter-increment:p;display:flex;gap:10px;align-items:baseline}
+.pasos-mini li::before{content:counter(p);font-family:var(--display);font-weight:700;color:var(--morado);min-width:14px}
+.aclaracion{font-size:.85rem;color:var(--gris);margin:12px 0 0}
+/* Celular: título, bajada y botones primero; lo demás después */
+@media(max-width:999px){
+  .portada{grid-template-areas:"texto" "accion"}
+  .portada-texto{display:contents}
+  .portada .antetitulo{order:1}.portada h1{order:2}.portada .bajada{order:3}
+  .portada-accion{order:4}
+  .claves{order:5;margin-top:var(--s2)}
+  main:has(.portada:not(.oculto)){padding-top:var(--s3)}
+}
+@media(min-width:1000px){
+  main:has(.portada:not(.oculto)){padding-top:var(--s4);padding-bottom:var(--s4)}
+  .portada{grid-template-columns:minmax(0,1.15fr) minmax(400px,1fr);gap:var(--s5);align-items:center;min-height:calc(100vh - 200px)}
+  .portada h1{font-size:3.1rem;line-height:1.02}
+  .portada .bajada{font-size:1.2rem;margin-bottom:var(--s4);max-width:34em}
+  .portada-accion{padding:var(--s4);border:1px solid var(--linea);border-radius:8px;background:var(--papel-2)}
+  .portada-accion h2{font-size:1.6rem;margin-bottom:var(--s2)}
+}

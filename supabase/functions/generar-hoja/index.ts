@@ -9,7 +9,7 @@ const PRECIO_SALIDA = 15 / 1_000_000;
 const CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type" };
 const PERFIL: Record<string, string> = { autoridades: "Autoridades y funcionarios municipales", sociedad_civil: "Sociedad civil" };
 
-const INSTRUCCIONES = await Deno.readTextFile(new URL("./instrucciones.md", import.meta.url));
+import { INSTRUCCIONES } from "./instrucciones.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
@@ -20,6 +20,14 @@ Deno.serve(async (req) => {
     const c = await req.json();
     if (!c?.perfil || !Array.isArray(c.temas) || c.temas.length === 0) return json({ error: "Faltan datos del formulario guía." }, 400);
     const texto_propio = String(c.texto_propio ?? "").slice(0, 1500);
+    for (const k of ["poblacion", "logro", "prioridades", "condiciones"]) c[k] = String(c[k] ?? "").slice(0, 500);
+
+    // Solo personas registradas, máximo 10 consultas por persona en 24 horas
+    if (!c.persona_id) return json({ error: "Falta el registro." }, 400);
+    const { data: persona } = await sb.from("personas").select("id").eq("id", c.persona_id).maybeSingle();
+    if (!persona) return json({ error: "Registro no encontrado." }, 403);
+    const { count } = await sb.from("consultas").select("id", { count: "exact", head: true }).eq("persona_id", c.persona_id).gte("creado", new Date(Date.now() - 864e5).toISOString());
+    if ((count ?? 0) >= 10) return json({ error: "Alcanzó el límite de 10 consultas por día." }, 429);
 
     // Fichas de los ejes marcados (y las demás como referencia secundaria)
     const { data: fichas, error: eF } = await sb.from("fichas").select("*").eq("activa", true).order("numero");

@@ -16,13 +16,14 @@ window.API = (function () {
   // Registra a la persona. Devuelve su id.
   async function registrar(persona) {
     if (!real) return 'prueba-' + Date.now();
-    const { data, error } = await sb.from('personas').insert({
-      nombres: persona.nombres, correo: persona.correo, perfil: persona.perfil,
+    const id = crypto.randomUUID();
+    const { error } = await sb.from('personas').insert({
+      id, nombres: persona.nombres, correo: persona.correo, perfil: persona.perfil,
       institucion: persona.institucion, cargo: persona.cargo || null, departamento: persona.departamento || null,
       consentimiento: true, consentimiento_fecha: new Date().toISOString()
-    }).select('id').single();
+    });
     if (error) throw error;
-    return data.id;
+    return id;
   }
 
   // Pide la hoja. Devuelve { consulta_id, hoja_markdown, modo }
@@ -38,7 +39,7 @@ window.API = (function () {
     const t = setInterval(() => onEstado && onEstado('Redactando las recomendaciones…', 0.6), 6000);
     try {
       const { data, error } = await sb.functions.invoke('generar-hoja', { body: consulta });
-      if (error) throw error;
+      if (error) { let msg = ''; try { msg = (await error.context.json()).error; } catch (e) {} throw new Error(msg || error.message); }
       return { consulta_id: data.consulta_id, hoja_markdown: data.hoja_markdown, modo: 'real' };
     } finally { clearInterval(t); }
   }
