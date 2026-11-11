@@ -96,6 +96,12 @@ Deno.serve(async (req) => {
     let cuerpo: string = data.content.filter((b: any) => b.type === "text").map((b: any) => b.text).join("").trim();
     if (!cuerpo) throw new Error(`Respuesta sin texto (stop_reason ${data.stop_reason}; bloques ${data.content.map((b: any) => b.type).join(",")})`);
 
+    // 7b. Evaluación de las fichas: el modelo la escribe en una línea EVALUACION: [...] que no va a la hoja
+    let evaluacion: any[] | null = null;
+    const mEv = cuerpo.match(/^\s*`*\s*EVALUACION:\s*(\[[\s\S]*?\])\s*`*\s*$/m);
+    if (mEv) { try { evaluacion = JSON.parse(mEv[1]); } catch { evaluacion = null; } cuerpo = cuerpo.replace(mEv[0], "").trim(); }
+    if (cuerpo.indexOf("# Hoja") > 0) cuerpo = cuerpo.slice(cuerpo.indexOf("# Hoja"));
+
     // 8. Revisión de la salida: se quita lo que el modelo no debe escribir, se normalizan las citas
     //    y se agregan las referencias con sus enlaces desde la base, para que salgan exactas
     cuerpo = cuerpo.replace(/\n## 6\.[\s\S]*$/, "").replace(/\n*Esta hoja se basa únicamente[\s\S]*$/, "").trim();
@@ -106,7 +112,31 @@ Deno.serve(async (req) => {
       const fuentes = f.fuentes_verificacion.map((t: string, i: number) => f.fuentes_url?.[i] ? `${t} [Ver fuente](${f.fuentes_url[i]})` : t);
       return `**Ficha ${f.numero}. ${f.nombre_corto} (${f.pais})**\n\n${fuentes.join("\n\n")}`;
     }).join("\n\n");
-    const hoja = `${cuerpo}\n\n## 6. Referencias\n\n${referencias}\n\n${NOTA}`;
+    let hoja = `${cuerpo}\n\n## 6. Referencias\n\n${referencias}\n\n${NOTA}`;
+
+    // 8b. Modo de prueba: muestra al final cómo se eligieron las fichas (se apaga con mostrar_criterios = false)
+    const PUNTOS: Record<string, number> = { si: 2, "sí": 2, parcial: 1, no: 0 };
+    const val = (x: unknown) => String(x ?? "").toLowerCase().trim();
+    if (Array.isArray(evaluacion)) {
+      evaluacion = evaluacion.filter((e) => fichas!.some((f) => f.numero === Number(e.ficha))).map((e) => {
+        const crit = ["poblacion", "logro", "condiciones", "contexto"].map((k) => val(e[k]));
+        const puntaje = crit.reduce((a, v) => a + (PUNTOS[v] ?? 0), 0);
+        return { ...e, ficha: Number(e.ficha), puntaje, elegida: citadas.includes(Number(e.ficha)) };
+      }).sort((a, b) => Number(b.elegida) - Number(a.elegida) || b.puntaje - a.puntaje || a.ficha - b.ficha);
+    }
+    const mostrar = conf?.find((x) => x.clave === "mostrar_criterios")?.valor;
+    if (mostrar !== false && Array.isArray(evaluacion) && evaluacion.length) {
+      const sino = (v: string) => (v === "si" || v === "sí") ? "sí" : v === "parcial" ? "parcial" : "no";
+      const lineas = evaluacion.map((e) => {
+        const f = fichas!.find((x) => x.numero === e.ficha)!;
+        return [
+          `**Ficha ${f.numero}. ${f.nombre_corto}: ${e.elegida ? "elegida" : "no elegida"} (${e.puntaje} de 8 puntos)**`,
+          `- Población: ${sino(val(e.poblacion))}. Lo que quiere lograr: ${sino(val(e.logro))}. Condiciones: ${sino(val(e.condiciones))}. Contexto: ${sino(val(e.contexto))}.`,
+          e.motivo ? `- Motivo: ${String(e.motivo).trim()}` : "",
+        ].filter(Boolean).join("\n");
+      }).join("\n\n");
+      hoja += `\n\n## Cómo se eligieron las fichas (modo de prueba)\n\nEl asistente recibió ${evaluacion.length} fichas de los temas marcados y calificó cada una con cuatro criterios. Cada «sí» vale 2 puntos, cada «parcial» 1 y cada «no» 0. Una ficha puede entrar a la hoja si suma 5 puntos o más y no tiene «no» en población ni en lo que quiere lograr.\n\n${lineas}`;
+    }
 
     // 9. Costo y registro
     const u = data.usage ?? {};
@@ -114,7 +144,7 @@ Deno.serve(async (req) => {
     const te = (u.input_tokens ?? 0) + cc + cr, ts = u.output_tokens ?? 0;
     const costo = ((u.input_tokens ?? 0) + cc * 1.25 + cr * 0.1) * PRECIO_ENTRADA + ts * PRECIO_SALIDA;
     await sb.from("consultas").update({
-      hoja_markdown: hoja, fichas_citadas: citadas, tokens_entrada: te, tokens_salida: ts,
+      hoja_markdown: hoja, fichas_citadas: citadas, evaluacion_fichas: evaluacion, tokens_entrada: te, tokens_salida: ts,
       costo_usd: costo, duracion_ms: Date.now() - inicio,
     }).eq("id", consultaId);
     return json({ consulta_id: consultaId, hoja_markdown: hoja, fichas_citadas: citadas, tokens: { entrada: te, salida: ts }, costo_usd: costo });
