@@ -1,8 +1,8 @@
 [
   {"id": "participacion_juvenil", "nombre": "Participación juvenil", "fichas": [1]},
-  {"id": "fortalecimiento_democratico", "nombre": "Fortalecimiento democrático", "fichas": [2, 7]},
-  {"id": "interculturalidad", "nombre": "Interculturalidad/Pertinencia territorial", "fichas": [3]},
-  {"id": "participacion_ciudadana", "nombre": "Participación ciudadana", "fichas": [4, 5, 6]},
-  {"id": "lucha_contra_discriminacion", "nombre": "Lucha contra la discriminación", "fichas": [8]},
+  {"id": "fortalecimiento_democratico", "nombre": "Fortalecimiento democrático", "fichas": [1, 2, 6, 7]},
+  {"id": "interculturalidad", "nombre": "Interculturalidad/Pertinencia territorial", "fichas": [3, 5, 6]},
+  {"id": "participacion_ciudadana", "nombre": "Participación ciudadana", "fichas": [2, 3, 4, 5, 6, 7]},
+  {"id": "lucha_contra_discriminacion", "nombre": "Lucha contra la discriminación", "fichas": [5, 8]},
   {"id": "enfoque_genero", "nombre": "Enfoque de género", "fichas": [5, 6, 8], "documento_contexto": "genero", "nota": "Eje nuevo acordado el vie 6. Se apoya además en el documento de contexto de género que Ashanti Perú envía hasta el mar 10."}
 ]
