@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Asistente Inteligente para la Innovación Pública Local · Ashanti Perú</title>
 <meta name="description" content="Recomendaciones aplicables a partir de buenas prácticas municipales de inclusión, con enfoque de género e interculturalidad, para autoridades, personal municipal y sociedad civil. Proyecto Municipios que Incluyen, Ashanti Perú.">
-<link rel="stylesheet" href="css/estilos.css?v=20261117">
+<link rel="stylesheet" href="css/estilos.css?v=20261118">
 <link rel="icon" type="image/png" sizes="32x32" href="marca/icono-32.png">
 <link rel="apple-touch-icon" href="marca/icono-180.png">
 <link rel="manifest" href="manifest.webmanifest">
@@ -76,11 +76,11 @@
     <p class="guia">Con cinco preguntas ordenamos su caso. En la primera puede marcar uno o varios temas.</p>
     <form id="f-guia" novalidate>
       <div class="campo" id="c-tema"><span class="etiqueta" id="q-tema"></span><div class="casillas" id="temas"></div><div class="error">Marque al menos un tema.</div></div>
-      <div class="campo"><label for="poblacion" id="q-poblacion"></label><input type="text" id="poblacion" required><div class="error">Cuéntenos con qué población trabaja.</div></div>
-      <div class="campo"><label for="logro" id="q-logro"></label><input type="text" id="logro" required><div class="error">Escriba qué quiere lograr.</div></div>
-      <div class="campo"><label for="prioridades" id="q-prioridades"></label><input type="text" id="prioridades" required><div class="error">Complete esta respuesta.</div></div>
-      <div class="campo"><label for="condiciones" id="q-condiciones"></label><input type="text" id="condiciones" required><div class="error">Complete esta respuesta.</div></div>
-      <div class="campo"><label for="texto_propio">Texto propio <span class="opcional">(opcional)</span></label><p class="ayuda" id="q-texto_propio"></p><textarea id="texto_propio" maxlength="1500"></textarea><div class="contador" id="contador">0 de 1 500 caracteres</div></div>
+      <div class="campo"><label for="poblacion" id="q-poblacion"></label><textarea class="crece" id="poblacion" rows="2" required></textarea><div class="error">Cuéntenos con qué población trabaja.</div></div>
+      <div class="campo"><label for="logro" id="q-logro"></label><textarea class="crece" id="logro" rows="2" required></textarea><div class="error">Escriba qué quiere lograr.</div></div>
+      <div class="campo"><label for="prioridades" id="q-prioridades"></label><textarea class="crece" id="prioridades" rows="2" required></textarea><div class="error">Complete esta respuesta.</div></div>
+      <div class="campo"><label for="condiciones" id="q-condiciones"></label><textarea class="crece" id="condiciones" rows="2" required></textarea><div class="error">Complete esta respuesta.</div></div>
+      <div class="campo"><label for="texto_propio">Texto propio <span class="opcional">(opcional)</span></label><p class="ayuda" id="q-texto_propio"></p><textarea class="crece" id="texto_propio" maxlength="1500"></textarea><div class="contador" id="contador">0 de 1 500 caracteres</div></div>
       <div class="acciones"><button type="submit" class="boton">Generar mi hoja de recomendaciones</button></div>
     </form>
   </section>
@@ -147,6 +147,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/api.js"></script>
 <script src="js/hoja-docx.js?v=20261117b"></script>
-<script src="js/app.js?v=20261117b"></script>
+<script src="js/app.js?v=20261118"></script>
 </body>
 </html>

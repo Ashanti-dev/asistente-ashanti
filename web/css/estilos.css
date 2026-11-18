@@ -101,6 +101,8 @@ form{margin-top:var(--s4)}
 .opcional{color:var(--gris);font-weight:400;font-size:.9rem}
 input[type=text],input[type=email],input[type=number],input[type=password],select,textarea{width:100%;font:inherit;color:var(--tinta);background:var(--blanco);border:1.5px solid var(--tinta-2);border-radius:4px;padding:12px 14px;min-height:52px}
 textarea{min-height:160px;resize:vertical;line-height:1.5}
+textarea.crece{field-sizing:content;overflow:hidden;resize:none}
+textarea.crece:not(#texto_propio){min-height:76px}
 input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none;border-color:var(--rojo);box-shadow:0 0 0 3px rgba(200,22,28,.18)}
 .contador{text-align:right;color:var(--gris);font-size:.9rem;margin-top:4px}
 .contador.limite{color:var(--rojo)}

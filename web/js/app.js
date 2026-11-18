@@ -74,6 +74,9 @@
     });
   }
   const ta = $('#texto_propio'), contador = $('#contador');
+  const crecer = el => { el.style.height = 'auto'; el.style.height = el.scrollHeight + 2 + 'px'; };
+  document.querySelectorAll('textarea.crece').forEach(el => { el.addEventListener('input', () => crecer(el)); crecer(el); });
+  window.addEventListener('resize', () => document.querySelectorAll('textarea.crece').forEach(crecer));
   ta.addEventListener('input', () => { const n = ta.value.length; contador.textContent = n.toLocaleString('es-PE') + ' de 1 500 caracteres'; contador.classList.toggle('limite', n >= 1500); });
 
   $('#f-guia').addEventListener('submit', async e => {
@@ -127,7 +130,7 @@
     try { await navigator.clipboard.writeText(texto); $('#b-copiar').textContent = 'Texto copiado'; setTimeout(() => $('#b-copiar').textContent = 'Copiar el texto', 2000); API.marcarDescarga(estado.consulta_id, 'copia'); }
     catch (e) { window.prompt('Copie el texto:', texto); }
   });
-  $('#b-nueva').addEventListener('click', () => { estado.hoja = null; estado.consulta_id = null; $('#f-guia').reset(); ta.dispatchEvent(new Event('input')); mostrar('formulario'); });
+  $('#b-nueva').addEventListener('click', () => { estado.hoja = null; estado.consulta_id = null; $('#f-guia').reset(); document.querySelectorAll('textarea.crece').forEach(el => el.dispatchEvent(new Event('input'))); mostrar('formulario'); });
 
   function alertar(msg) { let a = $('#alerta'); if (!a) { a = document.createElement('div'); a.id = 'alerta'; a.className = 'aviso error'; document.querySelector('main').prepend(a); } a.textContent = msg; a.scrollIntoView({ block: 'start' }); setTimeout(() => a.remove(), 8000); }
 
