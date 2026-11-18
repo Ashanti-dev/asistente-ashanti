@@ -106,7 +106,7 @@
         type: 'bar',
         data: { labels: g.pares.map(p => p[0]), datasets: [{ data: g.pares.map(p => p[1]), backgroundColor: g.color, borderRadius: 3, maxBarThickness: 36 }] },
         options: { indexAxis: horizontal ? 'y' : 'x', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' ' + c.raw } } },
-          scales: { x: { grid: { display: !horizontal, color: '#EEEEEC' }, ticks: { precision: 0, autoSkip: false, maxRotation: 0, minRotation: 0, font: { size: 12 }, callback: function (v) { return horizontal ? v : enLineas(this.getLabelForValue(v)); } } }, y: { grid: { display: horizontal, color: '#EEEEEC' }, ticks: { precision: 0, autoSkip: false, callback: function (v) { return horizontal ? corto(this.getLabelForValue(v)) : v; } } } } }
+          scales: { x: { grid: { display: !horizontal, color: '#EEEEEC' }, ticks: { precision: 0, autoSkip: false, maxRotation: 0, minRotation: 0, font: { size: 12 }, callback: function (v) { return horizontal ? v : enLineas(this.getLabelForValue(v)); } } }, y: { grid: { display: horizontal, color: '#EEEEEC' }, ticks: { precision: 0, autoSkip: false, callback: function (v) { return horizontal ? enLineas(this.getLabelForValue(v)) : v; } } } } }
       });
     }
     document.querySelectorAll('[data-png]').forEach(b => b.addEventListener('click', () => {

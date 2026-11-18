@@ -185,7 +185,7 @@ table{border-collapse:collapse;width:100%;font-size:14px}
 th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--linea);vertical-align:top;height:40px}
 th{font-weight:700;color:var(--tinta-2);background:var(--papel-2);position:sticky;top:0;white-space:nowrap}
 tbody tr:nth-child(even){background:#FAFAF9}
-td.recorte{max-width:360px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+td.recorte{max-width:360px;min-width:200px;white-space:normal;overflow-wrap:anywhere;line-height:1.45}
 td .ver{color:var(--morado);text-decoration:underline;cursor:pointer;background:none;border:none;font:inherit;padding:0}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:var(--s2);margin-bottom:var(--s3)}
 .kpi{background:var(--blanco);border:1px solid var(--linea);border-radius:4px;padding:var(--s2)}
