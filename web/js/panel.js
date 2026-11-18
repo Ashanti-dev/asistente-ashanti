@@ -167,7 +167,7 @@
         <div class="tabla-wrap"><table><thead><tr><th>N.°</th><th>Ficha</th><th>País</th><th>Ejes temáticos</th><th>Estado</th><th></th></tr></thead><tbody>${filas}</tbody></table></div>
         <div id="form-ficha" class="oculto"></div>
         <div class="barra-tabla" style="margin-top:40px"><h2 style="margin:0">Documentos de contexto</h2><button class="boton" id="b-nuevo-doc">Agregar documento</button></div>
-        <p class="ayuda-panel">Textos de apoyo por eje temático (por ejemplo, las preguntas seleccionadas de los manuales). El asistente los lee en cada consulta del eje, por lo que cada documento aumenta el costo por consulta.</p>
+        <p class="ayuda-panel">Textos de apoyo por eje temático (por ejemplo, las preguntas seleccionadas de los manuales). El asistente los lee en cada consulta del eje, por lo que cada documento aumenta el costo por consulta. Cada fila es un documento en un eje: marque o desmarque Activo para decidir en qué ejes se usa cada manual.</p>
         <div id="form-doc" class="oculto"></div>
         <div class="tabla-wrap"><table><thead><tr><th>Documento</th><th>Eje</th><th>Palabras</th><th>Fecha de carga</th><th>Estado</th><th></th></tr></thead><tbody>${d.documentos.map(x => `<tr><td>${esc(x.nombre)}</td><td>${nombreEje(x.eje)}</td><td>${(x.contenido || '').split(/\s+/).filter(Boolean).length}</td><td>${fecha(x.creado)}</td>
           <td><label class="interruptor"><input type="checkbox" data-doc-activo="${x.id}" ${x.activo === false ? '' : 'checked'}><span>${x.activo === false ? 'Inactivo' : 'Activo'}</span></label></td>
@@ -211,7 +211,7 @@
           <div class="campo"><label>Nombre del documento</label><input type="text" id="nd-nombre" placeholder="Por ejemplo: Manual de género, preguntas seleccionadas"></div>
           <div class="campo"><label>Eje temático</label><select id="nd-eje">${ejes.map(x => `<option value="${x.id}">${x.nombre}</option>`).join('')}</select></div>
           <div class="campo"><label>Cargar desde un archivo Word (.docx) o de texto (.txt)</label><input type="file" id="nd-archivo" accept=".docx,.txt"></div>
-          <div class="campo"><label>Contenido</label><textarea id="nd-contenido" rows="10" placeholder="Pegue aquí el texto, o cárguelo desde un archivo."></textarea><div class="contador" id="nd-palabras">0 palabras</div></div>
+          <div class="campo"><label>Texto que leerá el asistente</label><p class="ayuda">Se llena solo al cargar el archivo. Revíselo y quite lo que no sirva (portadas, índices). Si no tiene archivo, pegue aquí el texto.</p><textarea id="nd-contenido" rows="10" placeholder="Se llena al cargar el archivo, o pegue aquí el texto."></textarea><div class="contador" id="nd-palabras">0 palabras</div></div>
           <button class="boton" id="b-guardar-doc">Guardar documento</button> <span id="nd-estado" class="ayuda"></span></div>`;
         const cuenta = () => $('#nd-palabras').textContent = $('#nd-contenido').value.split(/\s+/).filter(Boolean).length.toLocaleString('es-PE') + ' palabras (unos US$ ' + ($('#nd-contenido').value.split(/\s+/).filter(Boolean).length * 1.4 * 3 / 1e6).toFixed(4).replace('.', ',') + ' más por consulta del eje)';
         $('#nd-contenido').addEventListener('input', cuenta);
@@ -249,7 +249,7 @@
     // ===== Configuración: presupuesto y límite mensual =====
     const valor = k => Number((d.configuracion.find(x => x.clave === k) || {}).valor ?? 0);
     const conCosto = d.consultas.filter(c => +c.costo_usd > 0);
-    const costoMedio = conCosto.length ? conCosto.reduce((a, c) => a + +c.costo_usd, 0) / conCosto.length : 0.045;
+    const costoMedio = conCosto.length ? conCosto.reduce((a, c) => a + +c.costo_usd, 0) / conCosto.length : 0.07;
     const inicioMes = new Date(); inicioMes.setDate(1); inicioMes.setHours(0, 0, 0, 0);
     const delMes = d.consultas.filter(c => new Date(c.creado) >= inicioMes && c.hoja_markdown !== undefined);
     const gastoMes = delMes.reduce((a, c) => a + (+c.costo_usd || 0), 0);
