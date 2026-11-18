@@ -127,6 +127,9 @@
     $('#v-login').classList.add('oculto'); $('#v-panel').classList.remove('oculto'); $('#quien').textContent = u.email;
     if (!real) $('#aviso-prueba').classList.remove('oculto');
     const d = await datos();
+    // Una consulta cuenta solo si terminó: la IA redactó la hoja (usó tokens), sin error.
+    // Las que fallaron, quedaron a medias o son pruebas sin IA se guardan en la base, pero no se cuentan ni se muestran.
+    d.consultas = d.consultas.filter(c => c.hoja_markdown && !c.error && +c.tokens_salida > 0);
     const descPorConsulta = {}; d.descargas.forEach(x => descPorConsulta[x.consulta_id] = (descPorConsulta[x.consulta_id] || 0) + 1);
 
     // Indicadores
@@ -274,7 +277,7 @@
     const conCosto = d.consultas.filter(c => +c.costo_usd > 0);
     const costoMedio = conCosto.length ? conCosto.reduce((a, c) => a + +c.costo_usd, 0) / conCosto.length : 0.07;
     const inicioMes = new Date(); inicioMes.setDate(1); inicioMes.setHours(0, 0, 0, 0);
-    const delMes = d.consultas.filter(c => new Date(c.creado) >= inicioMes && c.hoja_markdown !== undefined);
+    const delMes = d.consultas.filter(c => new Date(c.creado) >= inicioMes);
     const gastoMes = delMes.reduce((a, c) => a + (+c.costo_usd || 0), 0);
     const usd = n => 'US$ ' + n.toFixed(2).replace('.', ',');
     const sol = n => 'S/ ' + n.toFixed(2).replace('.', ',');
