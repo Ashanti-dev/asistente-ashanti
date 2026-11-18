@@ -103,6 +103,8 @@
     let html = marked.parse(estado.hoja, { mangle: false, headerIds: false });
     // Citas [Ficha N, ...] como etiquetas
     html = html.replace(/\[(Ficha \d+)(?:,\s*([^\]]+))?\]/g, (m, f, n) => `<span class="cita" title="${n ? n.replace(/"/g, '&quot;') : ''}">${f}</span>`);
+    // Citas [Manual N.º X] (documentos de contexto) con la misma etiqueta
+    html = html.replace(/\[(Manual N\.?\s*º?\s*\d+)[^\]]*\]/g, (m, f) => `<span class="cita">${f}</span>`);
     // Numerar visualmente las secciones
     html = html.replace(/<h2>(\d)\.\s*/g, '<h2><span class="n">$1.</span>');
     // Línea de meta (primer párrafo tras el h1) y nota final

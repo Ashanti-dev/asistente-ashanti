@@ -258,6 +258,7 @@
     const fmtMil = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
     const presupuesto = valor('presupuesto_mensual_usd') || 20, limite = valor('limite_mensual_total') || 400;
     const tcInicial = valor('tipo_cambio') || 3.418;
+    const criterios = (d.configuracion.find(x => x.clave === 'mostrar_criterios') || {}).valor === true;
     $('#t-configuracion').innerHTML = `
       <div class="kpis">
         <div class="kpi"><b>${usd(costoMedio).replace('US$ ', 'US$ ')}</b><span>Costo promedio por consulta${conCosto.length ? ' (real, ' + conCosto.length + ' consultas)' : ' (estimado)'}</span></div>
@@ -282,7 +283,18 @@
           <div class="campo" style="margin-top:16px"><label for="s-mes">Otra cantidad de consultas al mes</label><input type="number" min="0" id="s-mes" value="100"></div>
           <div class="resultado"><span>Costo estimado al mes</span><b id="s-total">–</b></div>
         </div>
+      </div>
+      <div class="kpi conf" style="margin-top:20px">
+        <h3>Revisión de la elección de fichas</h3>
+        <p class="ayuda">Si se activa, cada hoja termina con la sección «Cómo se eligieron las fichas», con el puntaje que el asistente dio a cada ficha. Sirve para revisar el criterio del asistente. Para el público conviene dejarla desactivada. El puntaje se guarda en cada consulta aunque no se muestre.</p>
+        <label class="interruptor"><input type="checkbox" id="c-criterios" ${criterios ? 'checked' : ''}> Mostrar «Cómo se eligieron las fichas» al final de la hoja</label>
+        <p class="ayuda" id="c-criterios-estado"></p>
       </div>`;
+    $('#c-criterios').addEventListener('change', async e => {
+      if (!real) { $('#c-criterios-estado').textContent = 'Modo de prueba: no se guarda.'; return; }
+      const r = await sb.from('configuracion').update({ valor: e.target.checked, actualizado: new Date().toISOString() }).eq('clave', 'mostrar_criterios');
+      $('#c-criterios-estado').textContent = r.error ? 'No se pudo guardar. Revise su conexión.' : (e.target.checked ? 'Activado. Rige desde la siguiente consulta.' : 'Desactivado. Rige desde la siguiente consulta.');
+    });
     const sugerir = () => { const p = +$('#c-presupuesto').value || 0; $('#c-sugerido').textContent = `Con ${usd(p)} alcanzan unas ${Math.floor(p / costoMedio)} consultas al mes. Se sugiere un límite un poco menor, por ejemplo ${Math.floor(p / costoMedio * 0.9)}.`; };
     $('#c-presupuesto').addEventListener('input', sugerir); sugerir();
     const simular = () => {

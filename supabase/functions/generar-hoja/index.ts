@@ -46,7 +46,11 @@ Deno.serve(async (req) => {
     const { data: ejes } = await sb.from("ejes").select("*").order("orden");
     const nombreEje = (id: string) => ejes?.find((e) => e.id === id)?.nombre ?? id;
     const principales = fichas!.filter((f) => f.ejes.some((e: string) => c.temas.includes(e)));
-    const { data: docs } = await sb.from("documentos_contexto").select("nombre, eje, contenido").eq("activo", true).in("eje", c.temas);
+    const { data: docsEje } = await sb.from("documentos_contexto").select("nombre, eje, contenido").eq("activo", true).in("eje", c.temas);
+    // Un mismo documento puede estar asignado a varios ejes: se envía una sola vez
+    const docs = Object.values((docsEje ?? []).reduce((a: Record<string, any>, d: any) => {
+      a[d.nombre] ??= { ...d, ejes: [] as string[] }; a[d.nombre].ejes.push(d.eje); return a;
+    }, {})) as any[];
 
     // 4. Registrar la consulta antes de llamar a la IA (si falla, queda el error)
     const { data: ins, error: eI } = await sb.from("consultas").insert({
@@ -68,7 +72,7 @@ Deno.serve(async (req) => {
     ].join("\n");
     const contexto = [
       "# Fichas que responden a los ejes marcados", ...principales.map(fichaTexto),
-      docs?.length ? "# Documentos de contexto (selección de Ashanti Perú)\n" + docs.map((d) => `## ${d.nombre} (${nombreEje(d.eje)})\n${d.contenido}`).join("\n\n") : "",
+      docs?.length ? "# Documentos de contexto (selección de Ashanti Perú)\n" + docs.map((d) => `## ${d.nombre} (${d.ejes.map(nombreEje).join("; ")})\n${d.contenido}`).join("\n\n") : "",
     ].join("\n\n");
 
     // 6. La consulta de la persona, tal como la respondió en el formulario guía
@@ -112,7 +116,11 @@ Deno.serve(async (req) => {
       const fuentes = f.fuentes_verificacion.map((t: string, i: number) => f.fuentes_url?.[i] ? `${t} [Ver fuente](${f.fuentes_url[i]})` : t);
       return `**Ficha ${f.numero}. ${f.nombre_corto} (${f.pais})**\n\n${fuentes.join("\n\n")}`;
     }).join("\n\n");
-    let hoja = `${cuerpo}\n\n## 6. Referencias\n\n${referencias}\n\n${NOTA}`;
+    // Documentos de contexto citados como [Manual N.º X]: se listan en las referencias
+    const manualesCitados = [...new Set([...cuerpo.matchAll(/\[Manual N\.?\s*º?\s*(\d+)[^\]]*\]/g)].map((m) => Number(m[1])))];
+    const refManuales = manualesCitados.map((n) => docs.find((d) => new RegExp(`Manual N\\.?\\s*º?\\s*${n}\\b`).test(d.nombre))).filter(Boolean)
+      .map((d: any) => `**${d.nombre}**\n\nAshanti Perú. Guía de bolsillo para la incidencia juvenil afroperuana. Preguntas y respuestas seleccionadas para la Caja de Herramientas.`).join("\n\n");
+    let hoja = `${cuerpo}\n\n## 6. Referencias\n\n${referencias}${refManuales ? "\n\n" + refManuales : ""}\n\n${NOTA}`;
 
     // 8b. Modo de prueba: muestra al final cómo se eligieron las fichas (se apaga con mostrar_criterios = false)
     const PUNTOS: Record<string, number> = { si: 2, "sí": 2, parcial: 1, no: 0 };
