@@ -66,6 +66,24 @@
     }));
     return `<div class="barra-tabla"><span>${filas.length} registros <span class="previsual">Previsualización · el detalle completo está en el Excel</span></span><button class="boton secundario" id="${id}">Descargar Excel</button></div><div class="tabla-wrap"><table><thead><tr>${th}</tr></thead><tbody>${tr || '<tr><td colspan="' + cols.length + '">Sin registros todavía.</td></tr>'}</tbody></table></div>`;
   }
+  // Vista en tarjetas: una por registro, con los textos largos completos en cuadros (scroll vertical, no horizontal)
+  function tarjetas(cols, filas, nombreExcel) {
+    const id = 'x' + Math.random().toString(36).slice(2);
+    setTimeout(() => $('#' + id).addEventListener('click', () => {
+      const ws = XLSX.utils.json_to_sheet(filas.map(f => Object.fromEntries(cols.map(c => [c.t, c.v(f) ?? '']))));
+      const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, nombreExcel.slice(0, 30));
+      XLSX.writeFile(wb, `${nombreExcel}_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    }));
+    const esc = t => String(t ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const val = (c, f) => c.html ? c.html(f) : esc(String(c.v(f) ?? ''));
+    const cab = cols.filter(c => c.zona === 'cab'), pie = cols.filter(c => c.zona === 'pie'), largos = cols.filter(c => !c.zona);
+    const items = filas.map(f => `<article class="tarjeta-reg">
+      <div class="tr-cab">${cab.map(c => `<span><em>${c.t}</em> ${val(c, f) || '—'}</span>`).join('')}</div>
+      <div class="tr-campos">${largos.map(c => { const t = val(c, f); return `<div class="tr-campo${c.ancho ? ' ancho' : ''}"><span class="et">${c.t}</span><div class="txt">${t || '<span class="vacio">Sin respuesta</span>'}</div></div>`; }).join('')}</div>
+      <div class="tr-pie">${pie.map(c => `<span>${c.html ? '' : `<em>${c.t}</em> `}${val(c, f)}</span>`).join('')}</div>
+    </article>`).join('');
+    return `<div class="barra-tabla"><span>${filas.length} registros</span><button class="boton secundario" id="${id}">Descargar Excel</button></div><div class="tarjetas-reg">${items || '<p>Sin registros todavía.</p>'}</div>`;
+  }
   function conteo(arr, f) { const m = {}; arr.forEach(x => { const k = f(x); if (k == null) return; (Array.isArray(k) ? k : [k]).forEach(kk => m[kk] = (m[kk] || 0) + 1); }); return Object.entries(m).sort((a, b) => b[1] - a[1]); }
   const graficas = [];
   function grafica(pares, titulo, color) {
@@ -79,11 +97,16 @@
       const horizontal = g.pares.length > 3;
       const cv = document.getElementById(g.id);
       const corto = v => { const t = String(v); return t.length > 34 ? t.slice(0, 32) + '…' : t; };
+      // Parte la etiqueta en líneas de hasta ~24 caracteres, sin cortar palabras (máx. 3 líneas)
+      const enLineas = v => { const pal = String(v).match(/[^ \/]+\/?/g) || ['']; const lin = []; let act = '';
+        const une = (a, w) => a ? (a.endsWith('/') ? a + w : a + ' ' + w) : w;
+        pal.forEach(w => { if (act && une(act, w).length > 24) { lin.push(act); act = w; } else act = une(act, w); });
+        if (act) lin.push(act); if (lin.length > 3) { lin.length = 3; lin[2] = lin[2].slice(0, 22) + '…'; } return lin; };
       new Chart(cv, {
         type: 'bar',
         data: { labels: g.pares.map(p => p[0]), datasets: [{ data: g.pares.map(p => p[1]), backgroundColor: g.color, borderRadius: 3, maxBarThickness: 36 }] },
         options: { indexAxis: horizontal ? 'y' : 'x', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' ' + c.raw } } },
-          scales: { x: { grid: { display: !horizontal, color: '#EEEEEC' }, ticks: { precision: 0 } }, y: { grid: { display: horizontal, color: '#EEEEEC' }, ticks: { precision: 0, autoSkip: false, callback: function (v) { return horizontal ? corto(this.getLabelForValue(v)) : v; } } } } }
+          scales: { x: { grid: { display: !horizontal, color: '#EEEEEC' }, ticks: { precision: 0, autoSkip: false, maxRotation: 0, minRotation: 0, font: { size: 12 }, callback: function (v) { return horizontal ? v : enLineas(this.getLabelForValue(v)); } } }, y: { grid: { display: horizontal, color: '#EEEEEC' }, ticks: { precision: 0, autoSkip: false, callback: function (v) { return horizontal ? corto(this.getLabelForValue(v)) : v; } } } } }
       });
     }
     document.querySelectorAll('[data-png]').forEach(b => b.addEventListener('click', () => {
@@ -133,13 +156,13 @@
 
     // Consultas
     const colsC = [
-      { t: 'Fecha', v: c => fecha(c.creado) }, { t: 'Persona', v: c => c.persona?.nombres }, { t: 'Perfil', v: c => PERFIL[c.perfil] },
-      { t: 'Institución', v: c => c.persona?.institucion, recorte: true }, { t: 'Temas', v: c => (c.temas || []).map(nombreEje).join('; '), recorte: true },
-      { t: 'Población', v: c => c.poblacion, recorte: true }, { t: 'Lo que quiere lograr', v: c => c.logro, recorte: true }, { t: 'Prioridades', v: c => c.prioridades, recorte: true }, { t: 'Condiciones', v: c => c.condiciones, recorte: true }, { t: 'Texto propio', v: c => c.texto_propio, recorte: true },
-      { t: 'Buenas prácticas citadas', v: c => (c.fichas_citadas || []).join(', ') }, { t: 'Descargas', v: c => descPorConsulta[c.id] || 0 },
-      { t: 'Hoja', v: c => c.hoja_markdown || '', html: c => c.hoja_markdown ? `<button class="ver" data-id="${c.id}">Ver hoja</button>` : '<span style="color:var(--gris)">(no guardada)</span>' }
+      { t: 'Fecha', v: c => fecha(c.creado), zona: 'cab' }, { t: 'Persona', v: c => c.persona?.nombres, zona: 'cab' }, { t: 'Perfil', v: c => PERFIL[c.perfil], zona: 'cab' },
+      { t: 'Institución', v: c => c.persona?.institucion, zona: 'cab' }, { t: 'Temas', v: c => (c.temas || []).map(nombreEje).join('; '), zona: 'cab' },
+      { t: 'Población', v: c => c.poblacion }, { t: 'Lo que quiere lograr', v: c => c.logro }, { t: 'Prioridades', v: c => c.prioridades }, { t: 'Condiciones', v: c => c.condiciones }, { t: 'Texto propio', v: c => c.texto_propio, ancho: true },
+      { t: 'Buenas prácticas citadas', v: c => (c.fichas_citadas || []).join(', '), zona: 'pie' }, { t: 'Descargas', v: c => descPorConsulta[c.id] || 0, zona: 'pie' },
+      { t: 'Hoja', zona: 'pie', v: c => c.hoja_markdown || '', html: c => c.hoja_markdown ? `<button class="ver" data-id="${c.id}">Ver hoja</button>` : '<span style="color:var(--gris)">(hoja no guardada)</span>' }
     ];
-    $('#t-consultas').innerHTML = tabla(colsC, d.consultas, 'Consultas');
+    $('#t-consultas').innerHTML = tarjetas(colsC, d.consultas, 'Consultas');
     $('#t-consultas').addEventListener('click', e => { const b = e.target.closest('.ver'); if (!b) return; const c = d.consultas.find(x => String(x.id) === b.dataset.id); $('#dlg-hoja').innerHTML = marked.parse(c.hoja_markdown); dlg.showModal(); });
 
     // Usuarios
