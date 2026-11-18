@@ -35,13 +35,41 @@ window.API = (function () {
       const md = await (await fetch(archivo)).text();
       return { consulta_id: null, hoja_markdown: md, modo: 'prueba' };
     }
-    onEstado && onEstado('Leyendo su consulta…', 0.1);
-    const t = setInterval(() => onEstado && onEstado('Redactando las recomendaciones…', 0.6), 6000);
-    try {
-      const { data, error } = await sb.functions.invoke('generar-hoja', { body: consulta });
+    // Modo cola: la función registra la consulta y responde al instante; la hoja se redacta en segundo plano.
+    // La web pregunta cada 3 segundos cómo va, hasta 8 minutos. Así, con mucha gente a la vez, nadie se cae: espera su turno.
+    const invocar = async (body) => {
+      const { data, error } = await sb.functions.invoke('generar-hoja', { body });
       if (error) { let msg = ''; try { msg = (await error.context.json()).error; } catch (e) {} throw new Error(msg || error.message); }
-      return { consulta_id: data.consulta_id, hoja_markdown: data.hoja_markdown, modo: 'real' };
-    } finally { clearInterval(t); }
+      return data;
+    };
+    const dormir = ms => new Promise(r => setTimeout(r, ms));
+    onEstado && onEstado('Leyendo su consulta…', 0.1);
+    const inicio = Date.now();
+    let d0 = await invocar({ ...consulta, modo: 'cola' });
+    if (d0.hoja_markdown) return { consulta_id: d0.consulta_id, hoja_markdown: d0.hoja_markdown, modo: 'real' };
+    // Si la consulta queda primera en la fila más de 2 minutos sin avanzar, su proceso se cayó: se reenvía una vez
+    let fallosRed = 0, primeraDesde = null, reenvios = 0;
+    while (Date.now() - inicio < 8 * 60 * 1000) {
+      await dormir(3000);
+      let d;
+      try { d = await invocar({ accion: 'estado', consulta_id: d0.consulta_id }); fallosRed = 0; }
+      catch (e) { if (/límite/i.test(e.message) || ++fallosRed > 5) throw e; continue; }
+      if (d.hoja_markdown) return { consulta_id: d.consulta_id, hoja_markdown: d.hoja_markdown, modo: 'real' };
+      if (d.fallo && reenvios >= 1) throw new Error(d.error || 'No se pudo generar la hoja.');
+      if (!d.antes) primeraDesde = primeraDesde || Date.now(); else primeraDesde = null;
+      if (d.fallo || (primeraDesde && Date.now() - primeraDesde > 120000 && reenvios < 1)) {
+        reenvios++; primeraDesde = null;
+        try { await invocar({ accion: 'abandonar', consulta_id: d0.consulta_id }); } catch (e) {}
+        d0 = await invocar({ ...consulta, modo: 'cola' });
+        if (d0.hoja_markdown) return { consulta_id: d0.consulta_id, hoja_markdown: d0.hoja_markdown, modo: 'real' };
+        continue;
+      }
+      const seg = (Date.now() - inicio) / 1000;
+      const avance = Math.min(0.92, 0.15 + seg / 90);
+      if (d.antes > 0) onEstado && onEstado('Hay mucha gente consultando. Su consulta está en cola, ' + (d.antes === 1 ? 'hay 1 antes que la suya' : 'hay ' + d.antes + ' antes que la suya') + '. No cierre esta página.', avance);
+      else onEstado && onEstado(seg < 8 ? 'Buscando las buenas prácticas de sus temas…' : 'Redactando las recomendaciones…', avance);
+    }
+    throw new Error('No se pudo generar la hoja.');
   }
 
   async function marcarDescarga(consulta_id, tipo) {
