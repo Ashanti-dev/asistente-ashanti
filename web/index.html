@@ -56,7 +56,7 @@
     <span class="antetitulo" id="r-perfil"></span>
     <h1>Antes de empezar, sus datos</h1>
     <p class="guia">Ashanti Perú usa estos datos para el seguimiento del proyecto. No necesita crear una cuenta.</p>
-    <form id="f-registro" novalidate>
+    <form id="f-registro" novalidate autocomplete="off">
       <div class="campo"><label for="nombres">Nombres y apellidos</label><input type="text" id="nombres" name="nombres" autocomplete="name" required><div class="error">Escriba su nombre.</div></div>
       <div class="campo"><label for="correo">Correo electrónico</label><input type="email" id="correo" name="correo" autocomplete="email" required><div class="error">Escriba un correo válido.</div></div>
       <div class="campo"><label for="institucion" id="l-institucion">Municipalidad u organización</label><p class="ayuda" id="a-institucion"></p><input type="text" id="institucion" name="institucion" required><div class="error">Indique su institución o escriba "independiente".</div></div>
@@ -74,7 +74,7 @@
     <span class="antetitulo" id="g-perfil"></span>
     <h1>Formulario guía</h1>
     <p class="guia">Con cinco preguntas ordenamos su caso. En la primera puede marcar uno o varios temas.</p>
-    <form id="f-guia" novalidate>
+    <form id="f-guia" novalidate autocomplete="off">
       <div class="campo" id="c-tema"><span class="etiqueta" id="q-tema"></span><div class="casillas" id="temas"></div><div class="error">Marque al menos un tema.</div></div>
       <div class="campo"><label for="poblacion" id="q-poblacion"></label><textarea class="crece" id="poblacion" rows="2" required></textarea><div class="error">Cuéntenos con qué población trabaja.</div></div>
       <div class="campo"><label for="logro" id="q-logro"></label><textarea class="crece" id="logro" rows="2" required></textarea><div class="error">Escriba qué quiere lograr.</div></div>
@@ -112,6 +112,7 @@
       <button class="boton" id="b-word">Descargar en Word</button>
       <button class="boton secundario" id="b-copiar">Copiar el texto</button>
       <button class="boton texto" id="b-nueva">Hacer otra consulta</button>
+      <button class="boton texto" id="b-cero">Empezar de cero</button>
     </div>
     <div id="aviso-hoja" class="aviso oculto"></div>
     <article class="hoja" id="hoja"></article>
@@ -147,6 +148,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/api.js"></script>
 <script src="js/hoja-docx.js?v=20261117b"></script>
-<script src="js/app.js?v=20261118"></script>
+<script src="js/app.js?v=20261118b"></script>
 </body>
 </html>

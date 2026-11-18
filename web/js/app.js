@@ -132,6 +132,17 @@
   });
   $('#b-nueva').addEventListener('click', () => { estado.hoja = null; estado.consulta_id = null; $('#f-guia').reset(); document.querySelectorAll('textarea.crece').forEach(el => el.dispatchEvent(new Event('input'))); mostrar('formulario'); });
 
+  // Empezar de cero: borra registro y formulario (para otra persona u otro caso)
+  function limpiarTodo() {
+    ['#f-registro', '#f-guia'].forEach(id => { const f = $(id); f.reset(); f.querySelectorAll('.invalido').forEach(c => c.classList.remove('invalido')); });
+    Object.assign(estado, { perfil: null, persona_id: null, registro: {}, consulta: null, hoja: null, consulta_id: null });
+    document.querySelectorAll('textarea.crece').forEach(el => el.dispatchEvent(new Event('input')));
+  }
+  $('#b-cero').addEventListener('click', () => { limpiarTodo(); mostrar('perfil'); });
+  // Si el navegador devuelve la página con lo escrito antes (recargar o volver), se limpia
+  window.addEventListener('pageshow', e => { if (e.persisted) { limpiarTodo(); mostrar('perfil'); } });
+  limpiarTodo();
+
   function alertar(msg) { let a = $('#alerta'); if (!a) { a = document.createElement('div'); a.id = 'alerta'; a.className = 'aviso error'; document.querySelector('main').prepend(a); } a.textContent = msg; a.scrollIntoView({ block: 'start' }); setTimeout(() => a.remove(), 8000); }
 
   ir((location.hash || '#perfil').slice(1));
